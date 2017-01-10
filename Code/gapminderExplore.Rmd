@@ -3,7 +3,7 @@ title: "gapminderExplore"
 author: "Brad McNeney"
 date: '2017-01-09'
 output: 
-  pdf_document:
+  html_document:
     fig_width: 6
     fig_height: 4
 ---
