@@ -1,6 +1,6 @@
 ---
 title: "gapminderExplore"
-author: "Brad McNeney"
+author: "name 1, name 2"
 date: '2017-01-09'
 output: 
   html_document:
@@ -22,7 +22,6 @@ library(gapminder)
 library(dplyr)
 library(ggplot2)
 ```
-
 Take a look at the top and bottom few
 lines of raw data.
 
@@ -53,7 +52,7 @@ and then by continent.
 ```{r}
 summarize(gapminder07, median(lifeExp))
 by_cont <- group_by(gapminder07, continent)
-summarize(by_cont, median(lifeExp))
+summarise(by_cont, median(lifeExp))
 ```
 
 In the above commands, `group_by()` creates a new data set
@@ -112,7 +111,7 @@ gapminder %>%
   filter(country %in% cc) %>%
   ggplot(aes(x=year,y=lifeExp,color=country)) +
    geom_point() +
-   geom_smooth(method = "lm", se=FALSE)
+   geom_smooth(method = "lm")
 ```
 
 Here's another interesting plot of life expectancy over time:
@@ -125,8 +124,6 @@ gapminder %>%
   geom_smooth(method = "loess", span=3/4)
 ```
 What happend in the mid-1970s in Australia?
-
-
 
 ## Life expectancy versus per capita GDP
 
