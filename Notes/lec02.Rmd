@@ -373,7 +373,8 @@ avec
 
 
 ## Infinite and undefined values
-\small
+
+\footnotesize
 
 - R has a special codes for infinite 
 values (`Inf`) and undefined values (`NaN`).
@@ -387,6 +388,25 @@ nn
 is.nan(nn)
 ```
 
+## The null object
+
+- The null object, `NULL`, is a neutral no-value object.
+    - Test for `NULL` with `is.null()`
+    - `NULL` can be used to initialize objects 
+    that will be created through combining, rbinding, etc.
+    
+```{r}
+x <- NULL; is.null(x)
+x <- c(x,1); x <- c(x,2); x 
+# etc., or as a loop (more on these later)
+x <- NULL
+for(i in 1:2) {
+  x <- c(x,i)
+}
+x
+```
+
+ 
 # R Functions
 
 ## R functions
