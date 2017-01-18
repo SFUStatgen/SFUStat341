@@ -80,7 +80,7 @@ layerInds <- function(layerNum,nrow) {
   ((layerNum-1)*nrow + 1):(layerNum*nrow) 
 }
 # Example use:
-inds <- layerInds(layer=1,nrow=nrow(gm3))
+inds <- layerInds(layer=1,nrow=nrow(gapminder))
 range(inds)
 ```
 
