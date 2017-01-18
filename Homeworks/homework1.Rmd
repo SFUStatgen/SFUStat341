@@ -25,6 +25,7 @@ operators to extract all data
 from Canada and the United States and saves them as a new
 dataset called `CanUS1`. 
 
+_Answer_
 
 2. (3 marks)
 Repeat the subsetting in (1) with the `filter()` function
@@ -34,11 +35,14 @@ Verify column-by-column that all elements of `CanUS1` and
 a `for` loop over columns. 
 What difference does `all.equal(CanUS1,CanUS2)` report?
 
+_Answer_
+
 3. (2 marks)
 Extract the columns `year`, `lifeExp`, `pop` and 
 `gdpPercap` and save this dataset as `gm2` (1 mark). 
 Also coerce `gm2` to a matrix and save as `gm3` (1 mark).
 
+_Answer_
 
 4. (2 marks)
 Create a larger dataset by stacking `gm2`
@@ -61,12 +65,14 @@ system.time({
 Use the first element of the output (`user` time) as 
 your measure of execution time.
 
+_Answer_
 
 5. (2 marks)
 Repeat (4) to create `biggm3` by stacking `gm3` 100 times,
 and compare the timings for constructing `biggm2` versus
 `biggm3`.
 
+_Answer_
 
 6. (3 marks) 
 Now build `biggm3` by (i) initializing an empty
@@ -84,6 +90,7 @@ inds <- layerInds(layer=1,nrow=nrow(gapminder))
 range(inds)
 ```
 
+_Answer_
 
 7. (3 marks)
 Write a function called `stackmat` that implements the faster
@@ -100,3 +107,4 @@ should:
 Test that your function can replicate the `biggm3` matrix
 you created earlier.
   
+_Answer_
