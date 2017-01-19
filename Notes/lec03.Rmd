@@ -140,3 +140,68 @@ csvURL <- url(paste0(baseURL,"Data/PorschePrice.csv"))
 PorschePrice <- read.csv(csvURL)
 ```
 
+## Reading more complex text files
+
+\footnotesize
+
+- Defaults for `read.table()` are not always what you want.
+    - In particular, the default for reading columns that
+    include text is to coerce to a factor.
+    - Also replaces spaces in column headers with `.`.
+
+```{r}
+exURL <- url(paste0(baseURL,"Data/Ex1_1_4.txt"))
+ex <- read.table(exURL,header=TRUE,sep="\t") 
+# same as  ex <- read.delim(exURL)
+ex
+str(ex)
+```
+
+## `stringsAsFactors`
+
+\small
+
+- Reading columns that include characters
+in as factors is controlled by a global option in your R session
+called `stringsAsFactors`, set to `TRUE` by default.
+- If you want to set to `FALSE` for an R session type
+`options(stringsAsFactors = FALSE)` into the Console.
+- An alternative is to over-ride the default in the
+call to `read.table()`:
+```{r}
+exURL <- url(paste0(baseURL,"Data/Ex1_1_4.txt"))
+ex2 <- read.table(exURL,header=TRUE,sep="\t",
+                  stringsAsFactors=FALSE) 
+str(ex2)
+```
+
+
+## Post-processing, part I
+
+- `Date.of.purchase` should be coerced to a `Date` object.
+```{r}
+ex2$Date.of.purchase <- 
+  as.Date(ex2$Date.of.purchase,"%m/%d/%Y") 
+str(ex2)
+diff(ex2$Date.of.purchase)
+```
+
+## Post-processing, part II
+
+\small
+
+- Will probably want to remove the `$` in `amount` and
+coerce to numeric.
+- Many options for manipulating strings. 
+- Useful functions, in increasing
+order of flexibility and complexity of use are
+    - `substr()`
+    - `strsplit()`
+    - `gsub()`
+- Will illustrate the simplest: 
+```{r}
+maxStringLen <- 6 # allows for amounts up to $99.99 only
+ex2$amount <- as.numeric(substr(ex2$amount,2,maxStringLen))
+str(ex2)
+```
+- See `help(substr)` for a description.
