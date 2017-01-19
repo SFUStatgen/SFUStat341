@@ -16,6 +16,7 @@ as "objects".
     - The objects a user creates from the R console are contained in
     the user's workspace, called the global environment. 
     - Use `ls()` to see a list of all objects in the workspace. 
+    - Use `rm(x)` to remove object `x` from the workspace.
 - We will discuss data structures first, and then functions and
 R packages.
 - In between we will discuss logical and relational operators that 
