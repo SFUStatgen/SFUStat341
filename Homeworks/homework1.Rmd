@@ -11,7 +11,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 We will work with the `gapminder` data 
 and will use functions from `dplyr` for this homework.
-The `gapmider` dataset is a `tbl_df` data structure, which 
+The `gapmider` dataset is a `tbl_df` data structure, 
+which 
 we will coerce to a `data.frame`.
 
 ```{r, warning=FALSE, message=FALSE}
