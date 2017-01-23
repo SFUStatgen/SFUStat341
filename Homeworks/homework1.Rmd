@@ -39,7 +39,8 @@ _Answer_
 
 3. (2 marks)
 Extract the columns `year`, `lifeExp`, `pop` and 
-`gdpPercap` and save this dataset as `gm2` (1 mark). 
+`gdpPercap` from the original `gapminder`
+dataset and save as `gm2` (1 mark). 
 Also coerce `gm2` to a matrix and save as `gm3` (1 mark).
 
 _Answer_
