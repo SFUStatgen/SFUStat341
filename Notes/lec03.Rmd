@@ -176,7 +176,7 @@ str(ex2)
 ```
 
 
-## Post-processing, part I
+## Post-processing: dates
 
 - `Date.of.purchase` should be coerced to a `Date` object.
 ```{r}
@@ -186,22 +186,31 @@ str(ex2)
 diff(ex2$Date.of.purchase)
 ```
 
-## Post-processing, part II
+## Post-processing: strings
 
 \small
 
 - Will probably want to remove the `$` in `amount` and
 coerce to numeric.
 - Many options for manipulating strings. 
-- Useful functions, in increasing
-order of flexibility and complexity of use are
-    - `substr()`
-    - `strsplit()`
-    - `gsub()`
-- Will illustrate the simplest: 
+- For now, just mention `substr()` and `paste()` 
+(more on string manipulation in Chapter 2): 
 ```{r}
-maxStringLen <- 6 # allows for amounts up to $99.99 only
-ex2$amount <- as.numeric(substr(ex2$amount,2,maxStringLen))
+maxStringLen <- 10 # allows for amounts up to $999999.99
+ex2$amount <- as.numeric(
+  substr(ex2$amount,start=2,stop=maxStringLen)
+  )
 str(ex2)
+paste("$",ex2$amount,sep="") # or paste0("$",ex2$amount)
 ```
-- See `help(substr)` for a description.
+
+## Reading and writing Excel files
+
+- If you have a working copy of Excel, the easiest 
+approach is to work with `.csv` format
+and use `read.csv()` and `write.csv()`.
+- However, there are functions in several 
+R packages for reading directly from an Excel file.
+    - See, for example, `read.xls()` from the 
+    `gdata` package.
+    
