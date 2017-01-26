@@ -214,4 +214,24 @@ cut(age,breaks = c(15,30,40,50,60,70,80)) %>%
 
 - Notice how the order of the levels has changed.
 
+## Dates
+ 
+\small
+
+- We have seen the `as.Date()` function for coercing 
+character strings to `Date` objects.
+    - The function first tries the format yyyy-mm-dd,
+    then yyyy/mm/dd. 
+    - If your dates are in some other format you will 
+    have to specify. 
+    - The formatting rules are described in `help(strptime)`.
+- Summary functions such as `mean()` and `diff()` can handle
+`Date` objects.
+```{r}
+dd <- c("2002-04-02","2005-08-17","2008-08-12")
+dd <- as.Date(dd)
+mean(dd)
+diff(dd)
+```
+
 
