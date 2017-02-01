@@ -222,9 +222,6 @@ cut(age,breaks = c(15,30,40,50,60,70,80)) %>%
 character strings to `Date` objects.
     - The function first tries the format yyyy-mm-dd,
     then yyyy/mm/dd. 
-    - If your dates are in some other format you will 
-    have to specify. 
-    - The formatting rules are described in `help(strptime)`.
 - Summary functions such as `mean()` and `diff()` can handle
 `Date` objects.
 ```{r}
@@ -234,4 +231,18 @@ mean(dd)
 diff(dd)
 ```
 
+## Reading dates in other formats
 
+\small
+
+- If your dates are in a format other than yyyy-mm-dd
+or yyyy/mm/dd you will 
+have to specify. 
+- The formatting rules are described in `help(strptime)`.
+```{r}
+dd <- c("05/14/1966","04/02/2002","08/17/2005","08/12/2008")
+dd <- as.Date(dd,format = "%m/%d/%Y")
+dd
+mean(dd)
+diff(dd)
+```
