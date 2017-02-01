@@ -1,0 +1,326 @@
+---
+title: "lecture 5"
+author: "Brad McNeney"
+date: '2017-01-29'
+output: beamer_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Working with character strings
+
+\small
+
+Fixed, or literal strings:
+
+- count the number of characters in a string
+- detect (yes/no) or find (starting position) substrings 
+- extract and substitute substrings
+- split and combine strings
+
+String patterns:
+
+- detect, find, extract and substitute
+
+Througout, illustrate "base" R utilities and those
+from the `stringr` package
+
+## Counting the number of characters
+
+\small
+
+```{r}
+mystrings <- c("one fish", "two fish", "red fish", "blue fish")
+nchar(mystrings)
+```
+
+## The ``stringr` package
+
+\small
+
+- Character string manipulation in R has evolved as
+a collection of tools whose name and function is 
+taken from string manipulation tools in Unix and
+other scripting languages such as Perl.
+- The `stringr` package aims for a cleaner interface
+for tasks that relate to detecting, extracting, replacing
+and splitting on substrings.
+- Will indicate that a function is from stringr by 
+prepending `stringr::` to the function name.
+```{r}
+library(stringr)
+```
+
+
+## Detecting substrings
+
+\footnotesize
+
+- `grep()` returns the indices of strings
+that contain a substring,
+while `grepl()` returns a logical vector:
+```{r}
+pattern <- "red"
+grep(pattern,mystrings)
+mystrings[grep(pattern,mystrings)]
+grepl(pattern,mystrings)
+mystrings[grepl(pattern,mystrings)]
+```
+
+## Detecting substrings with `stringr::str_detect()`
+
+\small
+
+- Works like `grepl()` but note that we *switch*
+the order of the arguments:
+```{r}
+str_detect(mystrings,pattern)
+mystrings[str_detect(mystrings,pattern)]
+```
+
+## Finding substring starting position
+
+\footnotesize
+
+- `regexpr()` returns the start of the first occurance
+of a pattern, `gregexpr()` returns the start of 
+all occurances.
+
+\scriptsize
+
+```{r}
+Seuss <- paste(mystrings,collapse=", "); Seuss
+regexpr("fish",Seuss) 
+gregexpr("fish",Seuss)
+```
+
+## Finding substring starting position with `stringr`
+
+\small
+
+- `stringr` analogs to `regrexpr` and `gregexpr` are
+`str_locate` and `str_locate_all`, with argument
+order reversed.
+```{r}
+str_locate(Seuss,"fish")
+str_locate_all(Seuss,"fish")
+```
+
+
+## Extracting substrings by start and stop position
+
+\small
+
+- We saw `substr()` in the example of lecture 3 where 
+we read in purchase amounts and wanted to remove the
+`$`. 
+- Takes a character string, or vector of strings, as
+argument. Specify start and stop character.
+- Another example
+```{r}
+substr("this string has 30 characters!",start=10,stop=20) 
+```
+
+## `substr()` with big start and stop
+
+\small
+
+```{r}
+bignum <- 1000
+substr("this string has 30 characters!",start=10,stop=bignum) 
+substr("this string has 30 characters!",start=31,stop=bignum) 
+```
+
+- If stop greater than number of characters, stop at the 
+end of the string.
+- If `start` greater than number of characters, return `""`
+
+## Note: `substr` can do replacements to character variables
+
+\small
+
+But its use is not very intuitive:
+
+```{r}
+x<-"this string has 30 characters!"
+substr(x,start=10,stop=20)  <- c("X")
+x
+substr(x,start=10,stop=20)  <- c("XXXXXXX")
+x
+substr(x,start=10,stop=20)  <- c("XXXXXXXXXXXXXXX")
+x
+```
+
+## Replacing (substituting) substrings 
+
+\small
+
+- `sub()` and `gsub()` replace the first and all 
+occurrences of a substring with a replacement.
+```{r}
+sub("fish","bird",Seuss)
+gsub("fish","bird",Seuss)
+```
+
+## Replacing substrings with `stringr`
+
+- Use `str_replace` and `str_replace_all`.
+```{r}
+str_replace(Seuss,"fish","bird") # replace first occurance
+str_replace_all(Seuss,"fish","bird") # replace all
+```
+
+
+
+## Splitting strings with `strsplit`
+
+\small
+
+- `strsplit()` splits a vector of character 
+strings on a specified separator and returns a list.
+```{r}
+mystrings <- c("this is a string", "so is this")
+strsplit(mystrings,split=" ")
+```
+
+## `strsplit()` on special characters
+
+\footnotesize
+
+- Some characters, such as `.`, have special meaning when 
+used as part of the `split` argument.
+    - more on these special characters and "regular expressions" soon
+- To match the `split` argument exactly, use
+`fixed=TRUE`
+```{r}
+mystrings <- c("20.50", "33.33")
+strsplit(mystrings,split=".")
+strsplit(mystrings,split=".",fixed=TRUE)
+```
+
+
+## Splitting with `stringr`
+
+\small
+
+- The `str_split()` command is similar to `strsplit()`
+```{r}
+strsplit(mystrings,split=".")
+strsplit(mystrings,split=".",fixed=TRUE)
+```
+
+## Combining strings with `paste()`
+
+\small
+
+- `paste()` glues together strings or vectors of strings separated by a user-specified separator (default " ").
+    - The default separator of `paste0()` is no-space "".
+```{r}
+mystrings <- c("21.33","33.33")
+paste(mystrings[1],mystrings[2])
+paste("$",mystrings,sep="") 
+```
+
+- We can also paste together elements of a vector
+```{r}
+paste(mystrings,collapse=" ")
+```
+
+
+
+## Working with string patterns: regular expressions
+
+\small 
+
+- The string manipulations so far that involve
+substrings have used fixed, or literal, substrings.
+- Sometimes we would prefer to identify strings 
+that match a pattern.
+- A regular expression (abbreviated regex) is a string
+of characters used to specify a search pattern
+- Regular expressions is a complex topic. We'll only 
+cover a simple case.
+    
+\scriptsize
+
+- Learn more with the following references: 
+    - RStudio Regular Expressions Cheatsheet:
+\url{https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf}
+    - Regular expressions secton of Prof. Bryan's Stat545 at UBC \url{http://stat545.com/block028_character-data.html}
+    - The Strings chapter of R for Data Science \url{http://r4ds.had.co.nz/strings.html}
+
+
+## A simple pattern with `.`
+
+\small
+
+- To illustrate pattern matching, use a simple pattern
+`p.n`, meaning `p` followed
+by any any character, followed by `n`.
+
+```{r}
+pattern <- "p.n"
+mystrings <- c("pineapple","apple","pen")
+```
+
+## Detecting patterns
+
+\small
+
+- The functions `grep`, `grepl` and `str_detect` 
+all accept regular expressions as the pattern to 
+find; e.g.,
+```{r}
+str_detect(mystrings,pattern)
+```
+
+## Splitting on a pattern
+
+\small
+
+- `strsplit` and `str_split` accept regular expressions 
+to split on; e.g.,
+```{r}
+str_split(mystrings,pattern)
+```
+
+## Locating a pattern
+
+\small
+
+- The string location functions `regexpr`, `gregexpr`,
+`str_locate` and `str_locate_all` accept regular expressions;
+e.g.,
+```{r}
+str_locate(mystrings,pattern)
+```
+
+## Extracting patterns
+
+\small
+
+- We previously extracted substrings based
+on start and stop postition.
+- Can also extract patterns.
+```{r}
+str_extract(mystrings,pattern)
+str_match(mystrings,pattern)
+```
+
+## Replacing patterns
+
+\small
+
+- `sub`, `gsub`, `str_replace` and `str_replace_all`
+accept regular expressions; e.g., 
+```{r}
+str_replace(mystrings,pattern,"PPAP")
+```
+
+- The replacement string is literal; e.g.,
+```{r}
+str_replace(mystrings,pattern,"p.n")
+```
+
