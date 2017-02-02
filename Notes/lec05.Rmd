@@ -27,14 +27,7 @@ String patterns:
 Througout, illustrate "base" R utilities and those
 from the `stringr` package
 
-## Counting the number of characters
 
-\small
-
-```{r}
-mystrings <- c("one fish", "two fish", "red fish", "blue fish")
-nchar(mystrings)
-```
 
 ## The ``stringr` package
 
@@ -47,12 +40,19 @@ other scripting languages such as Perl.
 - The `stringr` package aims for a cleaner interface
 for tasks that relate to detecting, extracting, replacing
 and splitting on substrings.
-- Will indicate that a function is from stringr by 
-prepending `stringr::` to the function name.
+
 ```{r}
 library(stringr)
 ```
 
+## Counting the number of characters
+
+\small
+
+```{r}
+mystrings <- c("one fish", "two fish", "red fish", "blue fish")
+nchar(mystrings)
+```
 
 ## Detecting substrings
 
