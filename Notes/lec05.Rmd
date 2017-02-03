@@ -205,10 +205,12 @@ strsplit(mystrings,split=".",fixed=TRUE)
 
 \small
 
-- The `str_split()` command is similar to `strsplit()`
+- The `str_split()` command is similar to `strsplit()`,
+but with argument `pattern` instead of `split`.
+    - wrap pattern in `fixed()` for a fixed string
 ```{r}
-strsplit(mystrings,split=".")
-strsplit(mystrings,split=".",fixed=TRUE)
+str_split(mystrings,pattern=".")
+str_split(mystrings,pattern=fixed("."))
 ```
 
 ## Combining strings with `paste()`
@@ -322,5 +324,23 @@ str_replace(mystrings,pattern,"PPAP")
 - The replacement string is literal; e.g.,
 ```{r}
 str_replace(mystrings,pattern,"p.n")
+```
+
+
+## Adding `*` and `+` quantifiers to `.`
+
+\small
+
+- The combinations `.*` and `.+` match 
+multiple characters.
+    - E.G., `f.*t` matches `f` followed by 0 or 
+    more characters, followed by `t`.
+    - `f.+t` matches `f` followed by 1 or more 
+    characters, followed by `t`.
+```{r}
+mystrings <- c("file1.txt","file10.txt","filetxt")
+pattern1 <- "file.*txt"; pattern2 <- "file.+txt"
+str_extract(mystrings,pattern1)
+str_extract(mystrings,pattern2)
 ```
 
