@@ -1,0 +1,63 @@
+---
+title: "Week 5 exercises"
+author: "Brad McNeney"
+date: '2017-02-06'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Background for exercises
+
+Suppose you have a directory that contains thousands of 
+files from a genetics experiment. The file names are
+of the form `chrNgeneC.txt`, where `chr` is short
+for chromosome, `N` can be a number
+between 1 and 22, or the letters `X` or `Y` and 
+`C` is a character string of arbitrary length. Here is a sample of 
+what these filenames might look like.
+```{r}
+fl <- c("chr1geneC1orf49.txt","chr1geneAMPD2.txt",
+        "chr2geneCOL4A4.txt","chr2geneHADHB.txt",
+        "chrXgeneCXorf49.txt")
+print(fl)
+```
+
+### Exercise 1: Function to find the files from a chromosome
+
+Write a function called `findChrFiles()`
+that takes the following inputs: (i) a character 
+vector (such as the example `fl` above) 
+with the filenames, and (ii) a 
+character string in the set 
+`cnum <- c(as.character(1:22),"X","Y")`
+and returns all filenames that include that chromosome.  Have
+your function check that the chromosome identifier is 
+in `cnum` and return the error message "Invalid chromosome" if not. 
+
+### Exercise 2: Extract gene names
+
+Write a function `findGeneNames()` that takes a list of filenames and 
+returns the gene names found in the filenames. 
+Hints: You can use regular expressions and
+`str_extract()` to extract strings of the 
+form `geneC.txt`. Then how do you trim off the leading 
+`gene` and the trailing `.txt`?
+
+
+### Exercise 3: read in files
+
+Write a function `readORF()`
+that takes a chromosome identifier in 
+the set `cnum` defined in exercise 1 and a vector of 
+gene names, and reads in all the files from that
+chromosome with a gene name that contains the string `orf`.
+Assume that the files all contain tabular data that is
+read in correctly by `read.table()` with its default settings.
+Save the data from these files in a list that has one 
+list element per gene, and with list elements named
+by gene. For example, "chrXgeneCXorf49.txt" should
+get read into a list element with name "CXorf49".
+Don't bother with error checking the inputs.
