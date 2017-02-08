@@ -1,0 +1,244 @@
+---
+title: "Lecture 6"
+author: "Brad McNeney"
+date: '2017-02-07'
+output: beamer_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Databases
+
+## Relational database
+
+- A relational database is a collection of 
+tables. 
+    - As statisticians, we think of rows 
+    (a.k.a. records) as 
+    sampled units, and columns as the variables
+    measured on the units.
+- Rows of one table are related to rows of 
+others by keys
+    - Each table has a key (primary key) that 
+    uniquely identifies the rows.
+    - Including the key of another table 
+    (a foreign key)
+    allows us to link (relate) records of 
+    the two tables.
+    
+    
+## Simple example database
+
+\footnotesize
+
+Example from [http://www.itl.nist.gov/div897/ctg/dm/sql_examples.htm]
+
+- `STATION` table
+
+ID  | City    | State  | Lat_N  | Long_W
+--- | ------- | ------ | ------ | -------
+13  | Phoenix | AZ     | 33     | 112
+44  | Denver  | CO     | 40     | 105
+66  | Caribou | ME     | 47     | 68
+
+- `STATS` table (primary key suppressed; ID is 
+foreign key)
+
+ID  | Month | Temp_F | Rain_I
+--- | ----- | ------ | ------
+13  | 1     | 57.4   | 0.31
+13  | 7     | 91.7   | 5.15
+44  | 1     | 27.3   | 0.18
+44  | 7     | 74.8   | 2.11
+66  | 1     | 6.7    | 2.1
+66  | 7     | 65.8   | 4.52
+
+## Database software terminology
+
+- Software refered to as relational database 
+management systems (RDBMS).
+    - Example implementations: MySQL, SQLite
+- The language for querying the database is 
+structured query language (SQL).
+    - Similar implementations in all major RDBMS
+- The database resides on a server, which
+we access with a client.
+    - Large databases will be on special-purpose
+    remote servers.
+    - Client runs on your computer.
+    - However, client/server model usually
+    involves layers of security
+    that make access difficult.
+    - We'll work mostly with SQLite -- server
+    runs on your computer.
+ 
+## Why databases in R?
+
+- The data is stored in a RDBMS.
+    - Our focus today
+- Work with datasets that are too large to be 
+stored in memory
+    - Discuss later
+    
+## SQLite databases in R 
+
+\small
+
+- The `RSQLite` package contains an SQLite client
+_and_ server we can use from R
+    - SQLite is an open-source RDBMS engine bundled
+    with RSQLite
+    - Interface 
+    with DB engine (connect, write to, etc.) _via_ 
+    a common interface called `DBI`
+    - Install `RSQLite` and `DBI` before starting
+    - Load `DBI`; access functions from `RSQLite`
+    with the `::` operator.
+```{r}
+library(DBI)
+mydb <- dbConnect(RSQLite::SQLite(), "my-db.sqlite")
+dbDisconnect(mydb)
+#> [1] TRUE
+unlink("my-db.sqlite")
+```
+
+## Notes
+
+- The first line, 
+`mydb <- dbConnect(RSQLite::SQLite(), "my-db.sqlite")`,
+creates a "connection" to an SQLite database stored in the file "my-db.sqlite"
+    - `SQLite()` is called the "driver". It 
+    handles all the RDBMS-specific details of
+    how the client and server communicate.
+    - Initially the database is empty
+- The second line, `dbDisconnect(mydb)`,
+disconnects from the database, but does not
+remove it.
+- Remove with `unlink()` (a base R command).
+- `dbDisconnect()` and all other commands
+we will use of the 
+form `db*` are generics from `DBI`
+
+## Creating `STATION` and `STATS` tables
+
+\scriptsize
+
+```{r}
+wdb <- dbConnect(RSQLite::SQLite(), "wdb.sqlite")
+STATION <- data.frame(ID=c(13,44,66),
+    City = c("Phoenix","Denver","Caribou"),
+    State = c("AZ","CO","ME"),
+    Lat_N = c(33,40,47),
+    Long_W = c(112,105,68))
+STATS <- data.frame(row = 1:6,
+    ID = c(13,13,44,44,66,66),
+    Month = c(1,7,1,7,1,7),
+    Temp_F = c(57.4,91.7,27.3,74.8,6.7,65.8),
+    Rain_I = c(0.31,5.15,0.18,2.11,2.1,4.52))
+dbWriteTable(wdb,name='STATION', value = STATION, overwrite=TRUE) 
+dbWriteTable(wdb,name='STATS', value = STATS, overwrite=TRUE)
+dbListTables(wdb)
+```
+
+## Notes
+
+- The `overwrite=TRUE` argument to the 
+`dbWriteTable()` commands is necessary for
+this demo, to allow re-knitting the document,
+but is not necessary in general.
+- Now that we have an example database,
+we can see how to use SQL to extract data.
+- Will interleave SQL tutorial and `DBI`. 
+
+## SQL: Retrieve data from a single table
+
+
+
+- The SQL `SELECT` statements:
+    - `SELECT * FROM STATION;`
+    - `SELECT City, Lat_N FROM STATION;`
+    - `SELECT Month, Temp_F, Rain_I FROM STATS;`
+- Filtering with the `WHERE` clause:
+    - `SELECT * from STATION WHERE Lat_N >= 40;`
+- Trailing `;` required for most SQL clients,
+but not R `DBI`.
+
+## DBI: Example data retrieval.
+
+\scriptsize
+
+```{r}
+dbGetQuery(wdb,"SELECT * from STATION")
+dbGetQuery(wdb,"SELECT City, Lat_N from STATION")
+dbGetQuery(wdb,"SELECT * from STATION WHERE Lat_N>=40")
+```
+
+## DBI: Notes on `dbGetQuery()`
+
+- `dbGetQuery()` calls three functions: 
+    (i) `dbSendQuery()` sends the query to the DB, 
+    (ii) `dbFetch()` fetches the "result set", and 
+    (iii) `dbClearResult()` frees memory and 
+    other resources associated with the result set.
+- If the result set is too large to fit in memory,
+you can split the fetching into batches.
+
+## DBI: Batched queries 
+
+\footnotesize
+
+```{r}
+rs <- dbSendQuery(wdb,"SELECT * FROM STATS")
+while (!dbHasCompleted(rs)) {
+  df <- dbFetch(rs, n = 2) # use n to set size of subset
+  print(df)
+}
+dbClearResult(rs)
+```
+
+## DBI: Parametrized queries
+
+\footnotesize
+
+- Can pass the same query with several different
+values of a parameter `x`.
+    - Bind a value to the parameter with `dbBind()`
+    
+```{r}
+rs <- dbSendQuery(wdb,"SELECT * FROM STATION WHERE Lat_N >= :x")
+dbBind(rs,param = list(x=40))
+dbFetch(rs)
+dbBind(rs,param=list(x=45))
+dbFetch(rs)
+dbClearResult(rs)
+```
+
+
+## SQL: Joining tables
+
+\small
+
+- The purpose of related tables is to 
+reduce redundancy.
+    - For example, all the info on the stations
+    appears once in the `STATION` table, and 
+    need not be repeated in the `STATS` table.
+- But what if we need the info on the stations
+and the weather data? Need to "join" tables.
+- Simplest join (inner join):
+`SELECT * from STATION, STATS WHERE STATION.ID=STATS.ID`
+
+## DBI: Example joins
+
+\scriptsize
+
+```{r}
+dbGetQuery(wdb,"SELECT * from STATION, STATS WHERE STATION.ID=STATS.ID")
+queryp1 <- "SELECT City, State, Month, Rain_I from STATION, STATS"
+queryp2 <- "WHERE STATION.ID=STATS.ID AND Month = 1 AND Lat_N >= 40"
+dbGetQuery(wdb,paste(queryp1,queryp2))
+```
+
+
