@@ -112,6 +112,9 @@ creates a "connection" to an SQLite database stored in the file "my-db.sqlite"
     - `SQLite()` is called the "driver". It 
     handles all the RDBMS-specific details of
     how the client and server communicate.
+    - The following argument is the file name for the 
+    database. Other drivers need details like
+    username and password to connect.
     - Initially the database is empty
 - The second line, `dbDisconnect(mydb)`,
 disconnects from the database, but does not
@@ -121,6 +124,23 @@ remove it.
 we will use of the 
 form `db*` are generics from `DBI`
 
+## Aside: MySQL database driver in R
+
+- Wasn't able to get easy access to a MySQL database
+on campus. 
+- In case it is of later use, here are the arguments
+to `dbConnec()` for connecting to a password-protected
+database for Stat 341.
+
+\footnotesize
+
+```
+con <- dbConnect(MySQL(), user='stataccess', 
+                  password='<password goes here>', 
+                  dbname='stat341', 
+                  host='muncho.its.sfu.ca')
+dbListTables(con)
+```
 ## Creating `STATION` and `STATS` tables
 
 \scriptsize
@@ -240,5 +260,151 @@ queryp1 <- "SELECT City, State, Month, Rain_I from STATION, STATS"
 queryp2 <- "WHERE STATION.ID=STATS.ID AND Month = 1 AND Lat_N >= 40"
 dbGetQuery(wdb,paste(queryp1,queryp2))
 ```
+
+## SQL: Left joins
+
+\small
+
+- The inner join returns data for cities
+in **both** the `STATION` and `STATS` tables.
+- If we want all stations, use
+a left join.
+    - First add another station with no data in `STATS`
+    - Miami, FL is at Lat 26 and Long 80.
+    - Give Miami station ID 77.
+    - In SQL we'd add Miami and do the left join with 
+```
+INSERT INTO STATION VALUE (77,'Miami','FL',26,80)
+SELECT * FROM STATION 
+LEFT JOIN STATS ON STATION.ID = STATS.ID
+```
+
+- Many other types of SQL joins. See
+[https://www.tutorialspoint.com/sqlite/sqlite_using_joins.htm]
+for a summary of joins in SQLite.
+
+## DBI: Adding to a table and left join
+
+\footnotesize
+
+```{r}
+miami <- data.frame(ID=77,City="Miami",State="FL",Lat_N=26,Long_W=80)
+dbWriteTable(wdb,name='STATION', value = miami, append=TRUE)
+qq<-"SELECT * FROM STATION LEFT JOIN STATS ON STATION.ID = STATS.ID"
+dbGetQuery(wdb,qq)
+```
+
+- Note: `append=TRUE` adds to the current table
+
+## SQL: Table indices
+
+\small
+
+- A query like
+`SELECT * FROM STATION WHERE Lat_N >= 40`
+requires that the RDBMS read the `Lat_N` 
+value in every row of `STATION` and 
+return the rows where `Lat_N` is 40 or more
+- Such a query can be made much faster 
+by creating an "index" on `Lat_N`.
+    - An index is a table in the database, sorted
+    on the indexed variable.
+    - See [http://www.sqlite.org/queryplanner.html] for
+    a nice description of how indexing columns speeds
+    up searches.
+    
+## DBI: Create an index with `dbExecute()`
+
+\small
+
+- Use `dbExecute()` to execute queries that
+do not return tabular data.
+
+```{r}
+dbExecute(wdb,"CREATE INDEX indx ON STATION(Lat_N)")
+```
+
+
+## Exercises
+
+
+1. Select the stations from the state of Colorado
+2. Add Vancouver as 
+a new station in the `STATION` table
+(Use BC as the "State" and the latitude 49 and
+longitude 123)
+3. Do an inner join that returns a table with city,
+state, and temperatures for July from 
+cities at north latitude 40 or less.
+4. Repeat (3) as a left join.
+
+
+## Clean up
+
+```{r}
+dbDisconnect(wdb)
+unlink("wdb.sqlite")
+```
+
+
+# Merging data frames
+
+## Inner joining data frames with `merge()` 
+
+\footnotesize
+
+- The `merge()` function in R does 
+SQL-like joins on data frames.
+    
+```{r}
+STATION <- rbind(STATION,miami)
+merge(STATION,STATS,by="ID")
+```
+
+## Left joining data frames with `merge()` 
+
+\footnotesize
+
+```{r}
+merge(STATION,STATS,by="ID",all.x=TRUE)
+```
+
+## Join functions in `dplyr`
+
+\footnotesize
+
+- In `dplyr` the functions for joining are
+more explicitly named
+
+```{r, warning=FALSE,message=FALSE}
+library(dplyr)
+inner_join(STATION,STATS,by="ID")
+```
+
+## Left join function in `dplyr`
+
+\footnotesize
+
+```{r}
+left_join(STATION,STATS,by="ID")
+```
+
+## Exercises with `dplyr`
+
+1. Select the stations from the state of Colorado
+(`filter()`)
+2. Select the City and State from the stations
+using the `select()` command from `dplyr`:
+`select(STATION,City,State)`1
+3. Add Vancouver as 
+a new station in the `STATION` data frame.
+Use BC as the "State" and the latitude 49 and
+longitude 123. (`rbind()` or `bind_rows()`)
+4. Do an inner join that returns a table with city,
+state, and temperatures for July from 
+cities at north latitude 40 or less.
+(`inner_join()` and `select()`)
+5. Repeat (3) as a left join.
+(`left_join()` and `select()`)
 
 
