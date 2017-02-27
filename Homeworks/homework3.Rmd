@@ -9,6 +9,8 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Due date for this homework is Monday March 5, 2017. 
+
 ## Shopping data from kaggle
 
 The data for this homework assignment is a small portion
