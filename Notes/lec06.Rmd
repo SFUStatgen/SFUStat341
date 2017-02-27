@@ -291,6 +291,7 @@ for a summary of joins in SQLite.
 miami <- data.frame(ID=77,City="Miami",State="FL",Lat_N=26,Long_W=80)
 dbWriteTable(wdb,name='STATION', value = miami, append=TRUE)
 qq<-"SELECT * FROM STATION LEFT JOIN STATS ON STATION.ID = STATS.ID"
+qq<-"SELECT City, State, Temp_F FROM STATION LEFT JOIN STATS ON STATION.ID = STATS.ID WHERE Lat_N >= 40"
 dbGetQuery(wdb,qq)
 ```
 
@@ -336,9 +337,28 @@ longitude 123)
 3. Do an inner join that returns a table with city,
 state, and temperatures for July from 
 cities at north latitude 40 or less.
-4. Repeat (3) as a left join.
+4. Repeat (3) as a left join. 
 
+##More Exercises
 
+\scriptsize
+
+5. Do a left join that returns a table with city,
+state, and temperatures for July from 
+cities at north latitude 40 or more.
+(Vancouver excluded because
+we filter on month, and month is missing for Vancouver.)
+6. Do a left join that returns a table with city,
+state, and temperatures from 
+cities at north latitude 40 or less.
+
+```{r}
+vancouver <- data.frame(ID=88,City="Vancouver",State="BC",Lat_N=49,Long_W=123)
+dbWriteTable(wdb,name='STATION', value = vancouver, append=TRUE)
+qq<-"SELECT * FROM STATION LEFT JOIN STATS ON STATION.ID = STATS.ID"
+qq<-"SELECT City, State, Temp_F FROM STATION LEFT JOIN STATS ON STATION.ID = STATS.ID WHERE Lat_N >= 40"
+dbGetQuery(wdb,qq)
+```
 ## Clean up
 
 ```{r}
@@ -347,9 +367,9 @@ unlink("wdb.sqlite")
 ```
 
 
-# Merging data frames
+# Merging, selecting and filtering on data frames
 
-## Inner joining data frames with `merge()` 
+## Inner join data frames with `merge()` 
 
 \footnotesize
 
@@ -381,6 +401,7 @@ library(dplyr)
 inner_join(STATION,STATS,by="ID")
 ```
 
+
 ## Left join function in `dplyr`
 
 \footnotesize
@@ -389,13 +410,52 @@ inner_join(STATION,STATS,by="ID")
 left_join(STATION,STATS,by="ID")
 ```
 
+## `select()` to select columns
+
+\footnotesize
+
+- `select()` from `dplyr` can be used to select columns.
+    - Can use different "helper" functions to select variables
+    (`help(select_helpers))`
+    
+\scriptsize
+
+```{r}
+select(STATION,City,State)
+select(STATION,matches("L."))
+```
+
+## Using `filter()` like `WHERE`
+
+```{r}
+select(STATION,matches("L.")) %>% filter(Lat_N>=40)
+```
+
+
+## Combining join/select/filter with `%>%`
+
+```{r}
+inner_join(STATION,STATS,by="ID") %>% 
+  select(matches("._.")) %>% filter(Lat_N>=40)
+```
+
+
+## Combining join/select/filter with `%>%`
+
+- After SQL it is natural to chain together joining,
+selecting and filtering.
+```{r}
+inner_join(STATION,STATS,by="ID") %>% 
+  select()
+```
+
 ## Exercises with `dplyr`
 
 1. Select the stations from the state of Colorado
 (`filter()`)
 2. Select the City and State from the stations
 using the `select()` command from `dplyr`:
-`select(STATION,City,State)`1
+`select(STATION,City,State)`
 3. Add Vancouver as 
 a new station in the `STATION` data frame.
 Use BC as the "State" and the latitude 49 and
