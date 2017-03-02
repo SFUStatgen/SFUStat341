@@ -220,6 +220,7 @@ maxlen <- max(nchar(tblong$demog))
 tblong %>% mutate(demog = substr(demog,8,maxlen)) %>%
   separate(demog, into=c("gender","agecat"),sep=1) -> tb
 head(tb)
+save(tb,file="tb.RData")
 ```
 
 
