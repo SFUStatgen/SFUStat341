@@ -291,7 +291,6 @@ for a summary of joins in SQLite.
 miami <- data.frame(ID=77,City="Miami",State="FL",Lat_N=26,Long_W=80)
 dbWriteTable(wdb,name='STATION', value = miami, append=TRUE)
 qq<-"SELECT * FROM STATION LEFT JOIN STATS ON STATION.ID = STATS.ID"
-qq<-"SELECT City, State, Temp_F FROM STATION LEFT JOIN STATS ON STATION.ID = STATS.ID WHERE Lat_N >= 40"
 dbGetQuery(wdb,qq)
 ```
 
@@ -355,9 +354,9 @@ cities at north latitude 40 or less.
 ```{r}
 vancouver <- data.frame(ID=88,City="Vancouver",State="BC",Lat_N=49,Long_W=123)
 dbWriteTable(wdb,name='STATION', value = vancouver, append=TRUE)
-qq<-"SELECT * FROM STATION LEFT JOIN STATS ON STATION.ID = STATS.ID"
-qq<-"SELECT City, State, Temp_F FROM STATION LEFT JOIN STATS ON STATION.ID = STATS.ID WHERE Lat_N >= 40"
-dbGetQuery(wdb,qq)
+qq1<-"SELECT City, State, Temp_F FROM STATION"
+qq2<-"LEFT JOIN STATS ON STATION.ID = STATS.ID WHERE Lat_N >= 40"
+dbGetQuery(wdb,paste(qq1,qq2))
 ```
 ## Clean up
 
@@ -439,15 +438,6 @@ inner_join(STATION,STATS,by="ID") %>%
   select(matches("._.")) %>% filter(Lat_N>=40)
 ```
 
-
-## Combining join/select/filter with `%>%`
-
-- After SQL it is natural to chain together joining,
-selecting and filtering.
-```{r}
-inner_join(STATION,STATS,by="ID") %>% 
-  select()
-```
 
 ## Exercises with `dplyr`
 
