@@ -1,0 +1,106 @@
+---
+title: "FTEs"
+author: "Brad McNeney"
+date: '2017-03-02'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+
+## Science enrollments database
+
+- Read in the science enrollments in wide format.
+    - Remember to set your working directory to the 
+    `Notes` folder, or a local copy, before 
+    reading in the following data.
+
+```{r}
+sci <- read.csv("SFUScienceEnrolSummary.csv",stringsAsFactors = FALSE)
+head(sci)
+```
+
+- The first column has the subject, e.g., `ACMA`, then empty strings
+until the next subject, etc. 
+- Similarly, there are some course numbers missing, 
+when a course had two (or more?) credit values 
+over its lifetime (e.g., Stat341 was once a 1-credit course).
+- Write a function called `fillEmpty` that takes
+an atomic vector as input and returns a filled-in version.
+
+```{r}
+fillEmpty<- function(x) {
+  for(i in 2:length(x)) {
+    if(x[i]=="") {
+      x[i] <- x[i-1]
+    }
+  }
+  x
+}
+sci <- mutate(sci,Subject = fillEmpty(Subject))
+sci <- mutate(sci,CrsNum = fillEmpty(CrsNum))
+```
+
+- Reshape by gathering the semesterly data into 
+rows.
+    - Semesters are labelled `X1YYS` where `YY` is the
+    year and `S` is the semester, with 1=spring,
+    4=summer and 7=fall.
+
+```{r}
+scilong <- gather(sci,semester,enrollment,X1074:X1171,na.rm=TRUE)
+```
+
+- Extract the semester number from the semester labels.
+
+```{r}
+scilong <- mutate(scilong,semester=parse_number(semester))
+```
+
+- A full-time equivalent (FTE) is 30 credit hours
+of the same subject.
+
+```{r}
+scilong <- mutate(scilong,FTEs = CreditHrs*enrollment/30)
+```
+
+- Create a `year` variable for the different 
+academic years represented in the database.
+    - Academic years start in fall and end in summer.
+    We only have complete data from 2007/08 through
+    2015/16 academic years. 
+    - Remove semesters from outside this range.
+
+```{r}
+scilong <- filter(scilong,semester > 1074 & semester < 1167)
+```
+
+- Now create a `year` variable, with value 2008 for 
+2007/08, value 2009 for 2008/09, and so on.
+    - One could probably come up with something more
+    elegant than the following, but it works.
+
+```{r}
+scilong <- mutate(scilong,year = 
+                    2008*(semester > 1074 & semester < 1087)+
+                    2009*(semester > 1084 & semester < 1097)+
+                    2010*(semester > 1094 & semester < 1107)+
+                    2011*(semester > 1104 & semester < 1117)+
+                    2012*(semester > 1114 & semester < 1127)+
+                    2013*(semester > 1124 & semester < 1137)+
+                    2014*(semester > 1134 & semester < 1147)+
+                    2015*(semester > 1144 & semester < 1157)+
+                    2016*(semester > 1154 & semester < 1167))
+```
+
+- Save the `scilong` data frame for future use.
+
+```{r}
+save(scilong, file="scilong.RData")
+```
