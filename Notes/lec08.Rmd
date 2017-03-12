@@ -295,6 +295,7 @@ stat <- unsplit(sp.stat,list(stat$year,stat$Subject))
 stat %>% group_by(year,Subject) %>% 
   mutate(FTEproportion = FTEs/sum(FTEs)) %>%
   ungroup() -> stat
+save(stat,file="statEnrol.RData")
 ```
 
 ## Split-apply-combine with `summarise()`
