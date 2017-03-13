@@ -1,0 +1,85 @@
+---
+title: "Homework 4"
+author: "Brad McNeney"
+date: '2017-03-09'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Getting started
+
+### Read in the Stat and Act Sci enrolments data 
+
+In lecture 8 we created a data frame
+called `stat` that contained data on enrolments
+in Stat and Act Sci courses. Copy this to your R working
+directory and load it.
+
+```{r, warning=FALSE, message=FALSE}
+load("statEnrol.RData")
+library(tidyverse)
+```
+
+
+### Course types
+
+1. Stat 1: Stat 101, 201, 203. First course in 
+Statistics for non-majors.
+2. Stat 2: Stat 302, 305. Second course in Statistics
+for non-majors
+3. Stat 100: A breadth (B) course in Statistics.
+4. Stat 270: Stat 270 is like Stat 1, but is intended for 
+Stat and Act Sci majors. It was also a 
+required course in Applied Sciences, but 
+they are now allowing BUEC 232
+5. ACMA: The courses in Actuarial Science
+6. Other Stats: These are Stat285 and all the 
+upper-division Statistics courses.
+
+## Questions
+
+1. (3 marks) Create a factor variable `courseType` whose value
+for each entry of `stat` is one `"Stat1","Stat2","Stat100","Stat270","ACMA","StatOther"`
+Add this variable to the `stat` data frame.
+
+2. (2 marks) Group `stat` by `courseType` and `year`
+and calculate the 
+sum of the `FTEs` for each group. Save
+your summary in a data frame called `statByType`
+
+3. (3 marks) Use `ggplot()` to draw a scatterplot
+of `FTEs` by `year`, stratified on `courseTypes`. Include
+scatterplot smoothers, but no standard errors. Add 
+an informative title to your plot.
+
+4. (2 marks) Extract from `stat` the courses in the 
+`StatOther` category. These courses are Stat 285
+(Stat 2 for Stats majors), and the upper-division
+courses for Stats majors and minors. (One exception is
+Stat 403 which is more of a service course than a course
+for majors and minors, but its enrolments are relatively small
+and I've left it in with the courses for majors and minors.)
+Experiment with different
+graphical displays that might shed light on the changes 
+in enrolments over time. **There is no right or wrong "answer" here**, just experiment.
+
+FYI, the courses that are considered accessible to minors are
+340/341/342, 403, 445, 475 and 485.
+With the exception of Stat 403, these were 
+introduced in the 2012/13 academic year, _after_ the
+increase in enrolments in the `statOther` category.
+
+
+5. (3 marks) Repeat the plot in question (3) but instead of plotting 
+the _number_ of FTEs
+for a given year and course type, plot FTEs as a proportion
+of all FTEs for each year. That is, the point for 
+Stat1 in 2008 should be the proportion of all Stat and Act Sci
+FTEs that were due to Stat1 courses.
+of FTEs for each year
+plot the proportion of all FTEs for for 
+each course type with the proportion of FTEs out of all
+FTEs in Stat and Act Sci.
