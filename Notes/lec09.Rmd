@@ -310,9 +310,15 @@ re-drawn
     elements to make a graph.
 - To understand the grammar we need to define the 
 basic elements.
-    - Start with definitions, some of which are 
+    - Start with definitions (in bold), some of which are 
     too abstract to be useful until we get into 
     details.
+- `ggplot`s can be built in layers, comprised of 
+**data** a **mapping**, a **geom** and optionally **stats**
+- The layers are arranged and labelled on the graph
+by **scale**s and **coord**s.
+- The data can also be broken into subsets and displayed
+in separate graphs by a **facet** specification.
 
 ## Components of a `ggplot`: data and mappings
 
@@ -325,7 +331,7 @@ data map to attributes on the plot.
 \scriptsize
 
 ```{r, fig.width=3, fig.height=2}
-ggplot(gapminder,aes(x=log10GdpPercap,y=lifeExp,color=continent,alpha=0.5))
+p <- ggplot(gapminder,aes(x=log10GdpPercap,y=lifeExp,color=continent))
 ```
 
 - From the dataset `gapminder`, the variable 
@@ -343,8 +349,7 @@ points and lines that we see on the plot.
 \scriptsize
 
 ```{r, fig.width=4, fig.height=3}
-ggplot(gapminder,aes(x=log10GdpPercap,y=lifeExp,color=continent)) +
-  geom_point(alpha=0.5) 
+p2 <- p + geom_point(alpha=0.5) 
 ```
 
 - alpha is the transparency aesthetic, between 0 and 1, best
@@ -360,8 +365,7 @@ e.g., a scatterplot smoother
 \scriptsize
 
 ```{r, fig.width=4, fig.height=3}
-ggplot(gapminder,aes(x=log10GdpPercap,y=lifeExp,color=continent)) + 
-  geom_point(alpha=0.5) + geom_smooth()
+p2 + geom_smooth()
 ```
 
 
@@ -381,8 +385,7 @@ ggplot(gapminder,aes(x=log10GdpPercap,y=lifeExp,color=continent)) +
 \scriptsize
 
 ```{r, fig.width=4, fig.height=1.7}
-ggplot(gapminder,aes(x=log10GdpPercap,y=lifeExp,color=continent)) + 
-  geom_point(alpha=0.5) 
+p2
 ```
 
 
@@ -397,8 +400,7 @@ get mapped to the graphics device.
 \scriptsize
 
 ```{r, fig.width=4, fig.height=2}
-ggplot(gapminder,aes(x=gdpPercap,y=lifeExp,color=continent)) +
-  geom_point(alpha=0.5) + coord_trans(x="log10")
+p2 + coord_trans(x="log10")
 ```
 
 
@@ -412,7 +414,106 @@ multiple plots on the graphics device.
 \scriptsize
 
 ```{r, fig.width=4, fig.height=2}
-ggplot(gapminder,aes(x=log10GdpPercap,y=lifeExp,color=continent)) +
-  geom_point() + facet_grid(continent ~ .)
+p2 +  facet_grid(continent ~ .)
 ```
+
+## Why so many components?
+
+\small
+
+- A framework for the components of a graph.
+- Gives the user the ability to change indvidual 
+components one at a time.
+
+## More details
+
+- Layers 
+    - data, aesthetic mapping, geom, statistical transformation 
+    and position adjustment (to be defined)
+- Tools for working with layers
+- Scales, axes and legends
+- Positioning: faceting and coordinate systems
+
+## Example dataset: Diamonds
+
+\small
+
+- Price and quality of about 54,000 diamonds.
+- Quality measures are carat (size), cut, colour and clarity
+- Also included are three measures of the dimensions of 
+each diamond labelled x, y and z.
+
+\scriptsize
+
+```{r}
+data(diamonds)
+head(diamonds)
+```
+
+## Layers
+
+\small
+
+- We first initialize the plot and then start adding layers.
+- Initializing is done with `ggplot()`.
+    - We usually specify the default data and aesthetic 
+    mappings for all subsequent layers, though this is not
+    necessary.
+    - Without layers, the plot is not displayed.
+
+\scriptsize
+
+```{r}
+p <- ggplot(diamonds,aes(x=carat,y=price,colour=cut))
+```
+
+## Adding layers
+
+\small
+
+- Add with a `+`
+- The `layer()` function can be used to specify a 
+geom, stat and position 
+    - data and mapping will be inherited from initialization
+
+\scriptsize
+
+```{r,fig.width=4,fig.height=2.5}
+p + layer(geom="point", stat="identity", position="identity")
+```
+
+- The data and aesthetic mapping for the layer are
+inherited from the initialization.
+
+
+## Shortcuts
+
+\small
+
+- Shortcut functions are of the form `geom_XXX()` and
+`stat_XXX()`.
+    - The `geom_XXX()` functions have a default stat and position
+    - The `stat_XXX()` functions have a default geom and position
+    - The `geom_XXX()` can over-ride the default stat and 
+    the `stat_XXX()` can over-ride the default geom though
+- Call on the previous slide is equivalent to 
+
+\scriptsize
+
+```{r}
+p <- p + geom_point() 
+```
+
+## Plot objects
+
+\small
+
+- Notice that plot objects can be stored as R objects:
+
+\tiny
+
+```{r}
+summary(p)
+```
+
 
