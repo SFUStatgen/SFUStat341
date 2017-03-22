@@ -364,8 +364,8 @@ e.g., a scatterplot smoother
 
 \scriptsize
 
-```{r, fig.width=4, fig.height=3}
-p2 + geom_smooth()
+```{r, fig.width=4, fig.height=2}
+p2 + stat_smooth()
 ```
 
 
@@ -400,7 +400,7 @@ get mapped to the graphics device.
 \scriptsize
 
 ```{r, fig.width=4, fig.height=2}
-p2 + coord_trans(x="log10")
+ggplot(gapminder,aes(x=gdpPercap,y=lifeExp,color=continent)) + geom_point(alpha=0.5) + coord_trans(x="log10")
 ```
 
 
@@ -450,11 +450,11 @@ data(diamonds)
 head(diamonds)
 ```
 
-## Layers
+## Initialization 
 
 \small
 
-- We first initialize the plot and then start adding layers.
+- We first initialize the plot.
 - Initializing is done with `ggplot()`.
     - We usually specify the default data and aesthetic 
     mappings for all subsequent layers, though this is not
@@ -486,7 +486,7 @@ p + layer(geom="point", stat="identity", position="identity")
 inherited from the initialization.
 
 
-## Shortcuts
+## Shortcuts for adding layers
 
 \small
 
@@ -504,7 +504,7 @@ inherited from the initialization.
 p <- p + geom_point() 
 ```
 
-## Plot objects
+## Aside: Plot objects
 
 \small
 
