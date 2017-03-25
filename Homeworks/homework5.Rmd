@@ -1,0 +1,73 @@
+---
+title: "Homework 5"
+author: "Brad McNeney"
+date: '2017-03-24'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load packages
+
+```{r, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(stringr)
+library(nycflights13)
+library(DBI)
+```
+
+## Questions
+
+1. (1 mark) Use the `nycflights13_sqlite()` function to copy the `nycflights13`
+data to an SQLite database. Record the location of the database file
+on your computer. You may want to use the `path` 
+argument of `nycflights13_sqlite()` to specify a file path 
+that is easy to remember.
+
+2. (1 mark) Use `DBI` functions to establish a connection to the database from 
+part (1) and list its tables. 
+
+
+3. (2 marks) The `flights` and `airlines` tables are the same as the 
+dataframes of the same name in the
+`nycflights13` package. See the R help file for `flights` and `airlines`
+for information on their columns
+Use `DBI` to perform an inner join between the `airlines` table
+and the `flights` table on `carrier`. In your SQL command 
+select only the `carrier`, `name`, `month`, `day`, `dep_time`
+and `dep_delay` variables.
+Save your dataframe in `flights`.
+
+
+4. (2 marks) Remove Inc., Co. and Corporation from the airline names in the
+`name` variable of `flights`. Then shorten the phrases "Airlines",
+"Air Lines", and "Airways" to just "Air". Print out the 
+unique values of `flights$name`.
+
+5. (2 marks) Select the flights from January. Calculate the median departure 
+delay for each airline on each day and save the results in a 
+dataframe called fldelaysJan. Plot median delay versus day, 
+with different facets for each airline. Use the `name` variable
+to specify airlines (instead of `carrier`) so that the labels
+on your facets are informative.
+
+6. (2 marks) The plot in part (4) is not very informative because one airline 
+had a very long median flight delay on one day in January. Remove this 
+one observation from `fldelaysJan`. Also remove the airline
+that had flights on only one day. Now redo the plot in (4).
+
+7. (3 marks) Identify the four airlines with the greatest median
+delays. Plot these four as facets on a single plot of median delay 
+versus day, and plot the remaining airlines as facets on a separate plot of 
+median delay versus day.
+Add informative titles to your two plots.
+
+8. (2 marks) Select the flights from January 1 and do line plots
+of departure delay by departure time, with different airlines
+in different facets.
+
+9. (2 marks) Redo the plot in part (8) for the airlines that had
+at least 100 flights on Jan 1.

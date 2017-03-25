@@ -125,6 +125,8 @@ p
 - To modify the scale,
 set with a `scale` function (more later).
 
+\scriptsize
+
 ```{r, fig.width=4, fig.height=2.7}
 clarityscale <- c("SI2","SI1","VS1","VS2","VVS2","VVS1","I1","IF")
 p + scale_color_discrete(name="clarity",breaks=clarityscale,
