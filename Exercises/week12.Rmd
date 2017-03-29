@@ -2,7 +2,7 @@
 title: "Week 12 exercises"
 author: "Brad McNeney"
 date: '2017-03-28'
-output: pdf_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 We will use a dataset on fruit flies that is made available in the package
 `Stat2Data`. Install `Stat2Data` and load the `FruitFlies` dataframe.
-You can read about the experiment with `help("FruitFlies")
+You can read about the experiment with `help("FruitFlies")`
 
 ```{r}
 library(Stat2Data)
