@@ -1,0 +1,52 @@
+---
+title: "Week 12 exercises"
+author: "Brad McNeney"
+date: '2017-03-28'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Obtain the data, load packages, set the random seed
+
+We will use a dataset on fruit flies that is made available in the package
+`Stat2Data`. Install `Stat2Data` and load the `FruitFlies` dataframe.
+You can read about the experiment with `help("FruitFlies")
+
+```{r}
+library(Stat2Data)
+data("FruitFlies")
+library(ggplot2)
+library(dplyr)
+library(broom)
+set.seed(123)
+```
+
+## Questions
+
+1. Plot histograms of `Longevity` in separate facets for each level
+of the factor `Treatment`. Use a binwidth of 10 for your histograms.
+
+2. Do boxplots of `Longevity` by `Treatment`
+
+3. Calculate sample size, mean and SD of `Longevity` within each 
+level of `Treatment`.
+
+
+4. Use `stat_summary()` to
+plot 95\% confidence intervals for the mean `Longevity` in each
+treatment group.
+
+
+5. Estimate the permutation distribution for the $F$ test of 
+treatment effect using 1000 permutations. Compute the p-value
+from your permutation distribution and compare to the model-based
+p-value.
+
+
+6. Use the `bootstrap()` function from the `broom` package to 
+compute 95\% bootstrap confidence intervals for each of the
+coefficients in the model for mean `Longevity` as a function 
+of `Treatment`. Compare to the model-based confidence intervals.
