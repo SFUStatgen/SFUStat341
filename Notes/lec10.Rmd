@@ -107,7 +107,7 @@ p<-p + geom_point(aes(color=clarity))
 
 \small
 
-- Over-riding affects only 
+- Overriding affects only 
 the layer, not the default scales
     - Unexpected behaviour: titles on legends and axes are
     taken from the default scale **and** layer
@@ -224,7 +224,7 @@ ggplot(gapminder,aes(x=year,y=lifeExp,
  geom_boxplot()
 ```
 
-## Over-ridding `group` on a layer
+## Overriding `group` on a layer
 
 \small
 
@@ -381,8 +381,7 @@ estimates with a violin plot.
 \scriptsize
 
 ```{r, fig.width=4, fig.height=2.2}
-h + geom_violin(aes(x=continent,y=lifeExp)) +
-   stat_summary(aes(x=continent,y=lifeExp),fun.data="mean_cl_normal",color="red")
+h + geom_violin(aes(x=continent,y=lifeExp)) 
 ```
 
 ## Adding measures of uncertainty
@@ -399,8 +398,7 @@ gfit <- lm(lifeExp ~ continent,data=gdat)
 newdat <- data.frame(continent=c("Africa","Americas","Asia","Europe")) 
 mm <- data.frame(newdat,predict(gfit,newdata=newdat,interval="confidence"))
 ggplot(mm,aes(x=continent,y=fit)) +
-  geom_point() +  geom_errorbar(aes(ymin=lwr,ymax=upr)) +
-  stat_summary(fun.data="mean_cl_normal",color="red")
+  geom_point() +  geom_errorbar(aes(ymin=lwr,ymax=upr))
 ```
 
 ## Measures of uncertainty with stat summaries
