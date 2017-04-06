@@ -94,8 +94,8 @@ testset <- pAuto[-traininds,]
 \scriptsize
 
 ```{r,fig.width=5,fig.height=3}
-AutoT <- mutate(Auto, train = (inds %in% traininds))
-ggplot(AutoT,aes(x=horsepower,y=mpg,color=train)) + geom_point()
+pAuto <- mutate(pAuto, train = (inds %in% traininds))
+ggplot(pAuto,aes(x=horsepower,y=mpg,color=train)) + geom_point()
 ```
 
 ## Validation method on the `Auto` data
