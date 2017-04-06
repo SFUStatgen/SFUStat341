@@ -427,7 +427,7 @@ ggplot(gdat,aes(x=continent,y=lifeExp)) +
     - `labs()` for adding axis labels,
     titles, and captions
     - `annotate()` to add annotations using aesthetics
-    passed to the function, rather than mapped from data.
+    passed as vectors to the function, rather than mapped from a dataframe.
 - Can add annotations one at a time or many at a time
     - to add many at a time, create a data frame
 
