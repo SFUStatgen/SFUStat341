@@ -1,7 +1,7 @@
 ---
 title: "Stat 341, Homework 1"
-author: "Brad McNeney"
-date: '2017-01-17'
+author: "Name1 and Name2 and Name3"
+date: '2018-01-15'
 output: html_document
 ---
 
