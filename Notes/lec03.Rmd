@@ -1,7 +1,7 @@
 ---
 title: "Stat 341 Lecture 3"
 author: "Brad McNeney"
-date: '2017-01-18'
+date: '2018-01-18'
 fontsize: 10pt
 output: 
   beamer_presentation:
