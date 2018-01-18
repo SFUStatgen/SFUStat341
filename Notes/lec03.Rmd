@@ -93,6 +93,23 @@ gmReduced <- select(gapminder, -continent, -pop, -gdpPercap)
 ```
 
 
+## Chaining with the Forward Pipe
+
+* Chain together multiple data manipulations with 
+the forward pipe `%>%`.
+    * The forward pipe is from the `magittr` package,
+    but is available automatically when we load `dplyr`.
+    
+\small
+
+```{r}
+gapminder %>%
+  filter(year == 2007) %>%
+  select(year,lifeExp,country) %>%
+  head()
+```
+
+
 # Control Flow
 
 ## `if` and `if`-`else` 
