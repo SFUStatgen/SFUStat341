@@ -1,23 +1,13 @@
 ---
 title: "Week 4 exercises"
 author: "Brad McNeney"
-date: '2017-01-31'
+date: '2018-01-26'
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-Notes:
-
-- If you want to work through these exercises using 
-real data, you will need to install the `car` package
-and load the `Davis` data. 
-- However, you should think of these exercises as
-potential exam questions, where you will be asked
-to write the R commands on paper, without access 
-to R or the data.
 
 ## Loading data from a package
 
