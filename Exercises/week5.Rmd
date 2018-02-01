@@ -1,7 +1,7 @@
 ---
 title: "Week 5 exercises"
 author: "Brad McNeney"
-date: '2017-02-06'
+date: '2018-02-02'
 output: html_document
 ---
 
