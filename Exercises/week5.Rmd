@@ -52,10 +52,9 @@ returns the gene names found in the filenames.
 Use regular expressions and
 `str_extract()` to extract strings of the 
 form `geneC.txt`. 
-    (a) How do you trim off the leading `gene` from a string of the form
-    `geneC.txt`?
-    (b) How do you trim off the trailing `.txt`?
-
+    (a) How do you trim off the trailing `.txt`?
+    (b) What is the output of `findGeneNames(findChrFiles(fl,"X"))`
+    
 ### Exercise 3: read in files
 
 - Write a function `readORF()`
