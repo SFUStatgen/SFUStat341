@@ -1,0 +1,53 @@
+---
+title: "Week 6 exercises"
+author: "Brad McNeney"
+date: '2018-02-08'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Set up DB 
+
+```{r}
+wdb <- dbConnect(RSQLite::SQLite(), "wdb.sqlite")
+STATION <- data.frame(ID=c(13,44,66),
+    City = c("Phoenix","Denver","Caribou"),
+    State = c("AZ","CO","ME"),
+    Lat_N = c(33,40,47),
+    Long_W = c(112,105,68))
+STATS <- data.frame(row = 1:6,
+    ID = c(13,13,44,44,66,66),
+    Month = c(1,7,1,7,1,7),
+    Temp_F = c(57.4,91.7,27.3,74.8,6.7,65.8),
+    Rain_I = c(0.31,5.15,0.18,2.11,2.1,4.52))
+dbWriteTable(wdb,name='STATION', value = STATION, overwrite=TRUE) 
+dbWriteTable(wdb,name='STATS', value = STATS, overwrite=TRUE)
+dbListTables(wdb)
+```
+
+### Exercises
+
+Using the database connection `wdb` do the following exercises.
+
+1. Select the stations from the state of Colorado
+2. Add Vancouver as 
+a new station in the `STATION` table
+(Use BC as the "State", latitude 49 and
+longitude 123)
+3. Do an inner join that returns a table with city,
+state, and temperatures for July from 
+cities at latitude 40 or more.
+4. Repeat (3) as a left join. 
+5. Do a left join that returns a table with city,
+state, and temperatures for July from 
+cities at north latitude 40 or more.
+(Vancouver excluded because
+we filter on month, and month is missing for Vancouver.)
+6. Do a left join that returns a table with city,
+state, and temperatures from 
+cities at north latitude 40 or less.
+
+
