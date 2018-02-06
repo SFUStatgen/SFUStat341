@@ -2,7 +2,11 @@
 title: "Lecture 6"
 author: "Brad McNeney"
 date: '2018-02-08'
-output: beamer_presentation
+output: 
+  beamer_presentation:
+    includes:
+      in_header: header_pagenum.tex
+    toc: true
 ---
 
 ```{r setup, include=FALSE}
@@ -80,6 +84,8 @@ we access with a client.
     - Our focus today
 - Work with datasets that are too large to be 
 stored in memory
+    - Extract only what you need, when you need it.
+    - See Stat 240
     
 ## SQLite databases in R 
 
@@ -127,9 +133,9 @@ form `db*` are generics from `DBI`
 
 - Wasn't able to get easy access to a MySQL database
 on campus. 
-- In case it is of later use, here are the arguments
-to `dbConnec()` for connecting to a password-protected
-database for Stat 341.
+- In case it is of later use, here are example arguments
+to `dbConnect()` for connecting to a password-protected
+MySQL database.
 
 \footnotesize
 
@@ -182,7 +188,7 @@ we can see how to use SQL to extract data.
 - Filtering with the `WHERE` clause:
     - `SELECT * from STATION WHERE Lat_N >= 40;`
 - Most SQL interfaces require a `;` at the end of each statement, but not
-R `DBI`.
+R's `DBI`.
 
 ## DBI: Example data retrieval.
 
@@ -249,17 +255,45 @@ reduce redundancy.
     need not be repeated in the `STATS` table.
 - But what if we need the info on the stations
 and the weather data? Need to "join" tables.
-- Simplest join (inner join):
+- Simplest join:
 `SELECT * from STATION, STATS WHERE STATION.ID=STATS.ID`
 
-## DBI: Example joins
+##
 
 \scriptsize
 
 ```{r}
-dbGetQuery(wdb,"SELECT * from STATION, STATS WHERE STATION.ID=STATS.ID")
-queryp1 <- "SELECT City, State, Month, Rain_I from STATION, STATS"
-queryp2 <- "WHERE STATION.ID=STATS.ID AND Month = 1 AND Lat_N >= 40"
+dbGetQuery(wdb,"SELECT * FROM STATION, STATS WHERE STATION.ID=STATS.ID")
+```
+
+## DBI: Example joins
+
+- With multiple tables it is safest to refer to variables
+by <tablename>.<varname>
+
+\scriptsize
+
+```{r}
+queryp1 <- "SELECT STATION.City, STATION.State, STATS.Month, STATS.Rain_I from STATION, STATS"
+queryp2 <- "WHERE STATION.ID=STATS.ID AND STATS.Month = 1 AND STATION.Lat_N >= 40"
+dbGetQuery(wdb,paste(queryp1,queryp2))
+```
+
+## SQL: Inner joins
+
+- The above join is an example of an "inner" join, which
+returns only entries for IDs in both the 
+`STATION` and `STATS` tables.
+- Another more explicit way to do an inner join is 
+with the `INNER JOIN` keyword.
+    - The `SELECT` statement is modified to include
+    only the first of the two tables.
+
+\scriptsize
+
+```{r}
+queryp1 <- "SELECT STATION.*, STATS.Month, STATS.Rain_I FROM STATION"
+queryp2 <- "INNER JOIN STATS ON STATION.ID=STATS.ID WHERE STATS.Month=1 AND STATION.Lat_N>=40"
 dbGetQuery(wdb,paste(queryp1,queryp2))
 ```
 
@@ -269,16 +303,18 @@ dbGetQuery(wdb,paste(queryp1,queryp2))
 
 - The inner join returns data for cities
 in **both** the `STATION` and `STATS` tables.
-- If we want the union of all stations, use
-a left join.
-    - First add another station with no data in `STATS`
+- If we want to return all cities in `STATION`,
+regardless of whether they have an entry in `STATS`, use a left join.
+    - First add a station to `STATION` with no data in `STATS`
     - Miami, FL is at Lat 26 and Long 80.
     - Give Miami station ID 77.
     - In SQL we'd add Miami and do the left join with 
+    
+\footnotesize
+
 ```
 INSERT INTO STATION VALUE (77,'Miami','FL',26,80)
-SELECT * FROM STATION 
-LEFT JOIN STATS ON STATION.ID = STATS.ID
+SELECT * FROM STATION LEFT JOIN STATS ON STATION.ID = STATS.ID
 ```
 
 - Many other types of SQL joins. See
@@ -326,40 +362,6 @@ do not return tabular data.
 dbExecute(wdb,"CREATE INDEX indx ON STATION(Lat_N)")
 ```
 
-
-## Exercises for Reading Week
-
-
-1. Select the stations from the state of Colorado
-2. Add Vancouver as 
-a new station in the `STATION` table
-(Use BC as the "State" and the latitude 49 and
-longitude 123)
-3. Do an inner join that returns a table with city,
-state, and temperatures for July from 
-cities at north latitude 40 or less.
-4. Repeat (3) as a left join. 
-
-## More Exercises
-
-\scriptsize
-
-5. Do a left join that returns a table with city,
-state, and temperatures for July from 
-cities at north latitude 40 or more.
-(Vancouver excluded because
-we filter on month, and month is missing for Vancouver.)
-6. Do a left join that returns a table with city,
-state, and temperatures from 
-cities at north latitude 40 or less.
-
-```{r}
-vancouver <- data.frame(ID=88,City="Vancouver",State="BC",Lat_N=49,Long_W=123)
-dbWriteTable(wdb,name='STATION', value = vancouver, append=TRUE)
-qq1<-"SELECT City, State, Temp_F FROM STATION"
-qq2<-"LEFT JOIN STATS ON STATION.ID = STATS.ID WHERE Lat_N >= 40"
-dbGetQuery(wdb,paste(qq1,qq2))
-```
 
 ## Clean up
 
@@ -440,24 +442,5 @@ select(STATION,matches("L.")) %>% filter(Lat_N>=40)
 inner_join(STATION,STATS,by="ID") %>% 
   select(matches("._.")) %>% filter(Lat_N>=40)
 ```
-
-
-## Exercises with `dplyr`
-
-1. Select the stations from the state of Colorado
-(`filter()`)
-2. Select the City and State from the stations
-using the `select()` command from `dplyr`:
-`select(STATION,City,State)`
-3. Add Vancouver as 
-a new station in the `STATION` data frame.
-Use BC as the "State" and the latitude 49 and
-longitude 123. (`rbind()` or `bind_rows()`)
-4. Do an inner join that returns a table with city,
-state, and temperatures for July from 
-cities at north latitude 40 or less.
-(`inner_join()` and `select()`)
-5. Repeat (3) as a left join.
-(`left_join()` and `select()`)
 
 

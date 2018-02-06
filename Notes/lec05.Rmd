@@ -2,7 +2,11 @@
 title: "lecture 5"
 author: "Brad McNeney"
 date: '2018-02-01'
-output: beamer_presentation
+output: 
+  beamer_presentation:
+    includes:
+      in_header: header_pagenum.tex
+    toc: true
 ---
 
 ```{r setup, include=FALSE}
@@ -260,7 +264,7 @@ that match a pattern.
 - A regular expression (abbreviated regex) is a string
 of characters used to specify a search pattern
 - Regular expressions is a complex topic. We'll only 
-cover a simple case.
+cover the basics.
     
 \scriptsize
 
