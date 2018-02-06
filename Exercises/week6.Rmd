@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ### Set up DB 
 
 ```{r}
+library(DBI)
 wdb <- dbConnect(RSQLite::SQLite(), "wdb.sqlite")
 STATION <- data.frame(ID=c(13,44,66),
     City = c("Phoenix","Denver","Caribou"),
@@ -28,26 +29,55 @@ dbWriteTable(wdb,name='STATS', value = STATS, overwrite=TRUE)
 dbListTables(wdb)
 ```
 
-### Exercises
+### SQL Exercises
 
 Using the database connection `wdb` do the following exercises.
 
 1. Select the stations from the state of Colorado
+
+
 2. Add Vancouver as 
 a new station in the `STATION` table
 (Use BC as the "State", latitude 49 and
 longitude 123)
+
+
 3. Do an inner join that returns a table with city,
-state, and temperatures for July from 
-cities at latitude 40 or more.
+state, month and temperatures 
+from cities at latitude 40 or more.
+
 4. Repeat (3) as a left join. 
+
+
 5. Do a left join that returns a table with city,
-state, and temperatures for July from 
+state, month and temperatures for July from 
 cities at north latitude 40 or more.
 (Vancouver excluded because
 we filter on month, and month is missing for Vancouver.)
-6. Do a left join that returns a table with city,
-state, and temperatures from 
-cities at north latitude 40 or less.
+
+
+### Exercises with `dplyr`
+
+Using the `STATION` and `STATS` data frames defined above, 
+answer the following.
+
+1. Filter `STATION` to just the stations from the state of Colorado 
+
+
+2. Select the City and State from the stations
+using the `select()` command from `dplyr`:
+
+
+3. Add Vancouver as 
+a new station in the `STATION` data frame.
+Use BC as the "State" and the latitude 49 and
+longitude 123. 
+
+4. Do an inner join that returns a table with city,
+state, month and temperatures for July from 
+cities at north latitude 40 or more.
+
+5. Repeat (3) as a left join.
+
 
 
