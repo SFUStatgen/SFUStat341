@@ -255,6 +255,32 @@ avec[2] <- 210
 avec
 ```
 
+## Assignment and lists
+
+* To assign to a list element, use `[[` rather than `[`.
+    - Assignment with `[` requires that the replacement 
+    element be of length 1; `[[` 
+    does not have this restriction
+    
+\scriptsize
+
+```{r}
+lvec[3:4] <- c("Hi","there")
+lvec[3:4]
+```
+
+##
+
+\scriptsize
+
+```{r}
+lvec[4] <- c("All","of","this")
+lvec[4] # Only used first element of replacement vector
+lvec[[4]] <- c("All","of","this")
+lvec[3:4]
+```
+
+
 ## Coercion: atomic vectors to lists
 
 - Atomic vectors can be coerced to lists with `as.list()`:
