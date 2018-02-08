@@ -269,14 +269,15 @@ dbGetQuery(wdb,"SELECT * FROM STATION, STATS WHERE STATION.ID=STATS.ID")
 ## DBI: Example joins
 
 - With multiple tables it is safest to refer to variables
-by <tablename>.<varname>
+by tablename.varname
 
 \scriptsize
 
 ```{r}
-queryp1 <- "SELECT STATION.City, STATION.State, STATS.Month, STATS.Rain_I from STATION, STATS"
-queryp2 <- "WHERE STATION.ID=STATS.ID AND STATS.Month = 1 AND STATION.Lat_N >= 40"
-dbGetQuery(wdb,paste(queryp1,queryp2))
+queryp1 <- "SELECT STATION.City, STATION.State, STATS.Month, STATS.Rain_I"
+queryp2 <- "FROM STATION, STATS"
+queryp3 <- "WHERE STATION.ID=STATS.ID AND STATS.Month = 1"
+dbGetQuery(wdb,paste(queryp1,queryp2,queryp3))
 ```
 
 ## SQL: Inner joins
@@ -293,7 +294,7 @@ with the `INNER JOIN` keyword.
 
 ```{r}
 queryp1 <- "SELECT STATION.*, STATS.Month, STATS.Rain_I FROM STATION"
-queryp2 <- "INNER JOIN STATS ON STATION.ID=STATS.ID WHERE STATS.Month=1 AND STATION.Lat_N>=40"
+queryp2 <- "INNER JOIN STATS ON STATION.ID=STATS.ID WHERE STATS.Month=1"
 dbGetQuery(wdb,paste(queryp1,queryp2))
 ```
 
@@ -378,11 +379,11 @@ unlink("wdb.sqlite")
 \footnotesize
 
 - The `merge()` function in R does 
-SQL-like joins on data frames.
+SQL-like inner-joins on data frames.
     
 ```{r}
 STATION <- rbind(STATION,miami)
-merge(STATION,STATS,by="ID")
+merge(STATION,STATS,by="ID") # miami not in STATS so not in join
 ```
 
 ## Left joining data frames with `merge()` 
