@@ -197,7 +197,7 @@ R's `DBI`.
 ```{r}
 dbGetQuery(wdb,"SELECT * from STATION")
 dbGetQuery(wdb,"SELECT City, Lat_N from STATION")
-dbGetQuery(wdb,"SELECT * from STATION WHERE Lat_N>=40")
+dbGetQuery(wdb,"SELECT * from STATION WHERE Lat_N>=40 AND City=='Denver'")
 ```
 
 ## DBI: Notes on `dbGetQuery()`
