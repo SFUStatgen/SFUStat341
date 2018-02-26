@@ -78,27 +78,26 @@ academic years represented in the database.
     - Remove semesters from outside this range.
 
 ```{r}
-# scilong <- filter(scilong,semester > 1074 & semester < 1167)
+scilong <- filter(scilong,semester >= 1077 & semester <= 1164)
 ```
 
 - Now create a `year` variable, with value 2008 for 
 2007/08, value 2009 for 2008/09, and so on.
     - One could probably come up with something more
     elegant than the following, but it works.
-- **CHANGE** use summer through spring as years
 
 ```{r}
 scilong <- mutate(scilong,year = 
-                    2007*(semester < 1077)+
-                    2008*(semester > 1074 & semester < 1087)+
-                    2009*(semester > 1084 & semester < 1097)+
-                    2010*(semester > 1094 & semester < 1107)+
-                    2011*(semester > 1104 & semester < 1117)+
-                    2012*(semester > 1114 & semester < 1127)+
-                    2013*(semester > 1124 & semester < 1137)+
-                    2014*(semester > 1134 & semester < 1147)+
-                    2015*(semester > 1144 & semester < 1157)+
-                    2016*(semester > 1154 & semester < 1167)+
+                    2007*(semester <= 1074)+
+                    2008*(semester >= 1077 & semester <= 1084)+
+                    2009*(semester >= 1087 & semester <= 1094)+
+                    2010*(semester >= 1097 & semester <= 1104)+
+                    2011*(semester >= 1107 & semester <= 1114)+
+                    2012*(semester >= 1117 & semester <= 1124)+
+                    2013*(semester >= 1127 & semester <= 1134)+
+                    2014*(semester >= 1137 & semester <= 1144)+
+                    2015*(semester >= 1147 & semester <= 1154)+
+                    2016*(semester >= 1157 & semester <= 1164)+
                     2017*(semester >= 1167))
 ```
 
