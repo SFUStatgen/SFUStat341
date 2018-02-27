@@ -1,0 +1,43 @@
+---
+title: "Week 7 exercises"
+author: "Brad McNeney"
+date: '2017-02-28'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## HIV prevalence from WHO
+
+- Estimated HIV prevalence was obtained from the 
+`gapminder` website https://www.gapminder.org/data/
+    * Estimated number of people living with HIV per 100 population of age group 15-49.
+    * Original data source is the UNAIDS online database at 
+    http://www.aidsinfoonline.org
+
+```{r}
+library(tidyverse)
+hiv <- read.csv("HIVprev.csv",stringsAsFactors = FALSE)
+```
+
+1. The first column of the data frame is the country, but it
+has been named`Estimated.HIV.Prevalence.....Ages.15.49.1`.
+Use the `rename()` function to rename this column  `Country`.
+
+2. The data from 1979 to 1989 is very sparse. Remove these
+columns from the data frame.
+
+3. Gather the yearly prevalence estimates into key, value pairs
+with `year` as the key and `prevalence` as the value. Save
+the result as `hivlong`.
+
+4. Sort `hivlong` on `Country`.
+
+5. Extract the years from the `year` column and 
+coerce to numeric.
+
+6. Use the `na.omit()` function to remove rows of `hivlong` 
+with missing prevalence.
+
