@@ -143,10 +143,11 @@ the date it entered the charts and the week.
 
 \scriptsize
 ```{r, warning=FALSE, message=FALSE}
-bblong %>% mutate(week = parse_number(week),
+bb <- 
+  bblong %>% mutate(week = parse_number(week),
               date = as.Date(date.entered) + 7*(week-1)) %>%
   select(-date.entered) %>% # don't need date.entered anymore
-  arrange(artist,track,week) -> bb
+  arrange(artist,track,week)
 head(bb,n=3)
 ```
 
@@ -503,7 +504,7 @@ head(unsplit(sp.stat,list(stat$year,stat$Subject)))
 \scriptsize
 
 ```{r}
-ungroup(sp.stat.dplyr) %>% select(Subject, FTEs, FTEpp)
+ungroup(sp.stat.dplyr) 
 ```
 
 ## Summary of split-apply-combine
