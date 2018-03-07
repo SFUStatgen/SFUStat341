@@ -1,0 +1,27 @@
+---
+title: "Week 8 exercises"
+author: "Brad McNeney"
+date: '2018-03-07'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. Run your week 7 R code to get the data frame `hivlong`.
+Reduce `hivlong` to the years 1990 to 2000, inclusive.
+
+2. Write a function `hivregr()` that takes data for a single
+country, fits a least squares regression of `prevalence` on `year`
+and returns the estimated regression slope.
+
+
+3. Split the `hivlong` data frame on `Country` and
+use `map_dbl()` to apply `hivregr()` to the data from 
+each country. Save the results in a vector `slopes`.
+Print the countries with estimated slope greater than one.
+
+4. Repeat part, but instead of defining a function `hivregr()`
+outside `map_dbl()`, define the function within the call to 
+`map_dbl()` and use all available short-cuts.
