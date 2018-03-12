@@ -27,8 +27,6 @@ an example of iterating:
     the same operation on each element.
 * Tools that we have discussed that are useful for iterating are 
 `for()` and `while()` loops.
-    - These are "imperative programming" tools, that 
-    make the iteration explicit.
 * Iteration is so common that special tools have been developed
 with the aim of reducing the amount of code (and therefore
 errors) required for common iterative tasks.
@@ -66,7 +64,7 @@ and execute the **body** for each value of the index variable.
 
 ```{r}
 beta1hat <- vector("double",length(rr))
-for(i in seq_along(rr)) { # safter than 1:length(rr) 
+for(i in seq_along(rr)) { # safer than 1:length(rr) 
   beta1hat[i] <- coefficients(rr[[i]])["x1"]
 }
 beta1hat
@@ -118,7 +116,9 @@ on the body.
 
 ```{r}
 b1fun <- function(fit) { coefficients(fit)["x1"] } # body
+bfun <- function(fit,cc) { coefficients(fit)[cc] } # body
 lapply(rr,b1fun)  # or sapply(rr,b1fun) or unlist(lapply(rr,b1fun))
+lapply(rr,bfun,"x2")  
 ```
 
 ## Iterating with the `map()` functions from `purrr`
@@ -256,7 +256,8 @@ variable.
 ```{r}
 oldops <- options(tibble.width=Inf, tibble.print_max=Inf)
 gm_byContinent <- group_by(gapminder,continent)
-summarize(gm_byContinent,min(lifeExp),median(lifeExp), IQR(lifeExp),mean(lifeExp),sd(lifeExp),max(lifeExp))
+summarize(gm_byContinent,min(lifeExp),median(lifeExp),
+          IQR(lifeExp),mean(lifeExp),sd(lifeExp),max(lifeExp))
 options(oldops)
 ```
 
@@ -523,7 +524,7 @@ p2 <- p + geom_point(alpha=0.5)
 ```
 
 - alpha is the transparency aesthetic, between 0 and 1, best
-applied directly to the geom it is to apply t
+applied directly to the geom.
 
 ## Components of a `ggplot`: statistical transformations
 
@@ -570,7 +571,8 @@ get mapped to the graphics device.
 \scriptsize
 
 ```{r, fig.width=4, fig.height=2}
-ggplot(gapminder,aes(x=gdpPercap,y=lifeExp,color=continent)) + geom_point(alpha=0.5) + coord_trans(x="log10")
+ggplot(gapminder,aes(x=gdpPercap,y=lifeExp,color=continent)) + 
+  geom_point(alpha=0.5) + coord_trans(x="log10")
 ```
 
 
