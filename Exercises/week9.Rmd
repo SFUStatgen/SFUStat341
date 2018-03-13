@@ -1,0 +1,86 @@
+---
+title: "Week 9 exercise"
+author: "Brad McNeney"
+date: '2018-03-12'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Data on SFU Stat and Act Sci students
+
+Questions 1, 2 and 5 include **quiz questions** that 
+you must **answer on canvas** by Wednesday March 21 at
+5 pm.
+
+
+- The following data are from a summary of 
+Stat and Act Sci students made available
+by SFU's Institutional Research and Planning office
+at [https://www.sfu.ca/content/dam/sfu/irp/departments/stat_tables.pdf].
+
+```{r, warning=FALSE, message=FALSE}
+stat <- data.frame(
+  year = 12:16,
+  FTEs = c(446.47,484.8,483.53,443.97,466),
+  majors = c(213,245,260,228,233),
+  minors = c(17,27,62,77,111),
+  p.intl = c(.4,.42,.51,.53,.54)) 
+head(stat)
+```
+
+- `year` is the end-year of an academic year; e.g., 
+12 = 2011/2012, and so on up to 16 = 2015/2016.
+- `FTEs` stands for full-time equivalent, which is 30 credit
+hours of classes in statistics and actuarial science.
+    - For example, if there are 120 students in Stat 341,
+    each receiving 2 credit hours, then this amounts to 
+    $120\times 2/30 = 8$ FTEs.
+- `majors` is the number of declared Stat or Act Sci majors.
+- `minors` is the number of declared Stat or Act Sci minors. 
+- `p.intl` is the proportion of interantional students.
+
+1. Load the packages in the `tidyverse` and 
+reshape the `FTEs`, `majors` and `minors`
+columns into a key-value pair of columns
+with the key variable labeled as 
+`type` and value variable labeled as `students`.
+Which of the following commands does the reshaping?
+    a) `statlong <- gather(stat,type,students,FTEs,majors,minors)`
+    b) `statlong <- gather(stat,type,students,-year,-p.intl)`
+    c) both of the above
+
+2. Plot `students` versus `year` by group `type`,
+with different colors for each type of student.
+Add a scatterplot smoother **without** standard
+error bands.
+Which interpretation of the graph do you agree with?
+    a) FTEs and majors are roughly steady, but minors
+    are increasing.
+    b) Majors are increasing, but minors are roughly steady.
+    c) Both majors and minors are roughly steady.
+
+3. Add the following variables to the `stat` data frame:
+
+- `total = majors+minors`
+- `international = total*p.intl`
+- `domestic = total*(1-p.intl)`
+
+4. Reshape the `total`, `international` and `domestic`
+columns into key-value pairs with key labeled
+`type` and value labeled `students`. 
+
+5. Plot  `students` versus `year` by group `type`,
+with different colors for each type of student.
+Add a scatterplot smoother **without** standard
+error bands.
+Which is the best interpretation of the graph:
+    a) The total number of majors + minors is increasing, 
+    and this increase is due to a roughly equal increase
+    in international and domestic students.
+    b) The total number of majors + minors is increasing 
+    primarily due to an increase
+    in international students.
