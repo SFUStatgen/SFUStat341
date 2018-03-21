@@ -213,7 +213,7 @@ to specify different groups on different layers.
 ```{r, fig.width=4, fig.height=2.2}
 ggplot(gapminder,aes(x=year,y=lifeExp,group=country,
                      color=continent)) + geom_line(alpha=0.2) + 
-  geom_smooth(aes(x=year,y=lifeExp,group=continent),se=FALSE)
+  geom_smooth(aes(group=continent),se=FALSE)
 ```
 
 ## Using `interaction()` to specify groups
