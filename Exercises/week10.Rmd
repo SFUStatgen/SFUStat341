@@ -1,0 +1,62 @@
+---
+title: "Week 10 exercises"
+author: "Brad McNeney"
+date: '2018-03-21'
+output:
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load packages
+
+```{r}
+library(tidyverse)
+library(stringr)
+library(ggplot2)
+```
+
+## Graphing youth unemployment data
+
+1. Read the youth unemployment data in the file
+`API_ILO_country_YU.csv` in the `Exercises` folder of GitHub
+into a data frame called `youthUI`. Be sure to 
+avoid reading strings in as factors.
+
+2. Reshape the data on different years into key-value pairs 
+with key `year` and value `unemplRate`. Remove the `X`'s from
+the year names and coerce to numeric.
+
+
+3. Plot unemployment rates by year 
+for each "country" in `youthUI`. Represent each time series
+by a line. Use an appropriate alpha level to manage overplotting.
+
+4. Extract the subset of "Countries" whose `Country.Name`
+contains the string
+"(IDA & IBRD countries)", and save in a data frame
+`youthDevel`. Remove the "(IDA * IBRD countries)" from 
+the country names. Remove `Country.Code` from the data frame.
+Notes: IDA stands for International Development Association.
+Countries that qualify for IDA loans are considered among
+the poorest developing countries in the world. 
+IBRD stands for International Bank
+for Reconstruction and Developent. IBRD countries are considered
+middle-income developing countries.
+
+
+5. Initialize a plot of unemployment rates by year 
+for each region in `youthDevel` with different colors
+and symbols for each region. Then add the following layers:
+    - Add lines.
+    - Add points. Do this with `geom_point()`, but add
+    a comment to your R code that would generate the 
+    same layer with the generic `layer()` function.
+    - In the legend of your plot, modify the legend title 
+    from its default to `Region`.
+    - Add an informative title.
+    - Add the world-wide unemployment data from `youthUI` (`Country.Name==World`).
+    - Finally, display your plot.
+    
