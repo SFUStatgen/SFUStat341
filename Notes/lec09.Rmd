@@ -402,6 +402,10 @@ h + geom_violin(aes(x=continent,y=lifeExp))
 \scriptsize
 
 ```{r,fig.width=4,fig.height=2,warning=FALSE}
+#msum <- gdat %>% 
+#  group_by(continent) %>%
+#  summarize(mean=mean(lifeExp),se=sd(lifeExp)/sqrt(n())) %>%
+#  mutate(lwr=mean-se*1.96,upr=mean+se*1.96) 
 gfit <- lm(lifeExp ~ continent,data=gdat)
 newdat <- data.frame(continent=c("Africa","Americas","Asia","Europe")) 
 mm <- data.frame(newdat,predict(gfit,newdata=newdat,interval="confidence"))
