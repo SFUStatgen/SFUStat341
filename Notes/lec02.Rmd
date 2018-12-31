@@ -47,7 +47,7 @@ in computer memory.
     * Find the type of an object with `typeof()`.
     
     
-\small
+\scriptsize
 
 ```{r}
 x <- 6 # stores as double by default
@@ -70,7 +70,7 @@ but the modes are coarser.
     sometimes reports the mode of an object, rather than
     its type, so we will frequently see reports of numeric objects.
 
-\small
+\scriptsize
 
 ```{r}
 mode(x)
@@ -88,7 +88,7 @@ mode(y)
     - Lists can be comprised of multiple data types
 - Empty vectors can be created by the `vector()` function:
 
-\small
+\scriptsize
 
 ```{r}
 # help("vector")
@@ -100,11 +100,11 @@ lvec <- vector(mode="list",length=4)
 
 - Data vectors can be created with `c()` or `list()`:
 
-\small
+\scriptsize
 
 ```{r}
-avec <- c(50,200,77)
-lvec <- list(50,200,77,c("grey","thin"))
+avec <- c(52,200,77)
+lvec <- list(52,200,77,c("grey","thin"))
 ```
 
 
@@ -112,7 +112,7 @@ lvec <- list(50,200,77,c("grey","thin"))
 
 - Use `c()` to combine vectors
 
-\footnotesize
+\scriptsize
 
 ```{r}
 c(avec,c(100,101))
@@ -135,7 +135,7 @@ str(avec)
 
 ##
 
-\small
+\scriptsize
 
 ```{r}
 typeof(lvec)
@@ -148,7 +148,7 @@ str(lvec)
 
 - We can specify element names when creating a vector; e.g.:
 
-\small
+\scriptsize
 
 ```{r}
 lvec <- list(age=50,weight=200,height=77,hair=c("grey","thin"))
@@ -161,7 +161,7 @@ design.
 - Factors are implemented in R as atomic vectors with attributes
 `class` and `levels`:
 
-\small
+\scriptsize
 
 ```{r}
 trt <- factor(c("drug1","placebo","placebo","drug2"))
@@ -177,7 +177,7 @@ with assigned labels ordered alphabetically
 - You can specify an order to the factors with 
 the `level` argument:
 
-\small
+\scriptsize
 
 ```{r}
 trt <- factor(c("drug1","placebo","placebo","drug2"),
@@ -192,7 +192,7 @@ trt
 - Such "meta-data" can be used to tell R how to handle the 
 object; e.g., how to print it, summarize it, etc.
 
-\footnotesize
+\scriptsize
 
 ```{r}
 class(lvec) <- "prof"
@@ -204,7 +204,7 @@ lvec
 
 - Subset with `[` or by name:
 
-\small
+\scriptsize
 
 ```{r}
 lvec[c(1,3)] # same as lvec[c("age","height")]
@@ -214,7 +214,7 @@ lvec[c(1,3)] # same as lvec[c("age","height")]
 
 - Extract individual elements with `[[`, or `$` for named objects:
 
-\small
+\scriptsize
 
 ```{r}
 lvec[[4]]
@@ -226,7 +226,7 @@ lvec$hair
 - Subsetting may remove all instances of a level, but the 
 level will be retained in the data structure
 
-\small
+\scriptsize
 
 ```{r}
 trt[1:3]
@@ -236,7 +236,7 @@ trt[1:3]
 
 - If subsetting is intended to remove a level of the factor, use `drop=TRUE`
 
-\small
+\scriptsize
 
 ```{r}
 trt[1:3,drop=TRUE]
@@ -247,7 +247,7 @@ trt[1:3,drop=TRUE]
 - You can combine subsetting and assignment to change 
 the value of vectors
 
-\small
+\scriptsize
 
 ```{r}
 avec
@@ -285,7 +285,7 @@ lvec[3:4]
 
 - Atomic vectors can be coerced to lists with `as.list()`:
 
-\small
+\scriptsize
 
 ```{r}
 avec = c(age=50,weight=200,height=77)
@@ -297,7 +297,7 @@ as.list(avec)
 
 - Lists can be "flattened" into atomic vectors with `unlist()`:
 
-\small
+\scriptsize
 
 ```{r}
 unlist(lvec)
@@ -316,7 +316,7 @@ integer, numeric, character.
 - Use `as.vector()` to coerce a factor back to an atomic vector. 
 - The result is a character vector. You may need to use `as.numeric()` to coerce to numeric, if required.
 
-\small
+\scriptsize
 
 ```{r}
 a <-factor(c(2,1,1,2))
@@ -340,7 +340,7 @@ of varying type.
 ## Matrices
 
 - Matrices can be created with the `matrix()` function as in 
-\small
+\scriptsize
 
 ```{r}
 A <- matrix(1:4,nrow=2,ncol=2) 
@@ -356,7 +356,7 @@ A
 - The default is to read the data vector into the matrix column-by-column. To 
 read row-by-row instead use the `byrow=TRUE` argument:
 
-\small
+\scriptsize
 
 ```{r}
 A <- matrix(1:4,nrow=2,ncol=2,byrow=TRUE) 
@@ -364,9 +364,12 @@ A
 ```
 
 ## Combining matrices
-\small
+
 
 - Combine matrices with `rbind()` and `cbind()`:
+
+\scriptsize
+
 ```{r}
 rbind(A,matrix(c(5,6),nrow=1,ncol=2))
 cbind(A,A)
@@ -377,7 +380,7 @@ cbind(A,A)
 - Matrices have a type, dimension (number of rows, number of 
 columns) and optional attributes such as dimnames (row and column names).
 
-\small
+\scriptsize
 
 ```{r}
 typeof(A)
@@ -386,7 +389,7 @@ dim(A)
 
 ##
 
-\footnotesize
+\scriptsize
 
 ```{r}
 colnames(A) <- c("var1","var2")
@@ -452,7 +455,7 @@ str(dd)
 
 ## Subsetting and combining data frames like a list
 
-\small
+\scriptsize
 
 ```{r}
 dd$x 
@@ -461,7 +464,7 @@ dd[[1]]
 
 ## Subsetting and combining data frames like a matrix
 
-\small
+\scriptsize
 
 ```{r}
 dd[1:2,]
@@ -617,7 +620,7 @@ x
 essential.
 
 ## Example function 
-\small
+\scriptsize
 
 ```{r}
 f <- function(x) {
