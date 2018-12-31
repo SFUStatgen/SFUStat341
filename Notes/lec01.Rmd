@@ -2,7 +2,7 @@
 title: 'Statistics 341:  Intro to Stat Computing and Exploratory Data Analysis with R'
 subtitle: 'Lecture 1: Introduction to R and Getting Started'
 author: "Brad Mcneney"
-date: '2018-01-04'
+date: '2019-01-03'
 output: 
   beamer_presentation:
     includes:
