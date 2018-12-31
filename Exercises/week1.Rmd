@@ -1,0 +1,153 @@
+---
+title: "gapminderExplore"
+author: "name 1, name 2"
+date: '2017-01-09'
+output: 
+  html_document:
+    fig_width: 6
+    fig_height: 4
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Exploratory analysis of gapminder data
+
+Load the gapminder data. We will also need
+an R package called `dplyr` that will facilitate exploratory analyses and `ggplot2` to allow visualization.
+
+```{r}
+library(gapminder)
+library(dplyr)
+library(ggplot2)
+```
+Take a look at the top and bottom few
+lines of raw data.
+
+```{r}
+head(gapminder)
+tail(gapminder)
+summary(gapminder)
+```
+
+Type `help("gapminder")` in the R console for information
+about the gapmider dataset.
+
+We will explore the life expectancy variable for 
+the year 2007. First filter the data to just 2007.
+
+```{r}
+gapminder07 <- filter(gapminder, year == 2007)
+head(gapminder07)
+```
+
+In R, the `<-` is the assignment operator that creates 
+new variables/datasets.
+
+## Life expectancy by continent
+Calculate median life expectancy, first overall, 
+and then by continent.
+
+```{r}
+summarize(gapminder07, median(lifeExp))
+by_cont <- group_by(gapminder07, continent)
+summarise(by_cont, median(lifeExp))
+```
+
+In the above commands, `group_by()` creates a new data set
+with observations grouped by continent.
+
+We can visualize the median life expectancies.
+
+```{r}
+medL <- summarize(by_cont, median(lifeExp))
+plot(medL)
+```
+
+What is "Oceania"?
+
+```{r}
+filter(gapminder07,continent == "Oceania")
+```
+
+
+The `dplyr` package allows for us to "chain" the filter,
+grouping and summary commands. The following is 
+an equivalent way to construct `medL`:
+
+```{r}
+medL <- gapminder %>%
+  filter(year == 2007) %>%
+  group_by(continent) %>%
+  summarise(medLifeExp = median(lifeExp))
+```
+
+## Life expectancy over time
+
+First look at African countries
+```{r}
+medLA <- gapminder %>%
+  filter(continent == "Africa") %>%
+  group_by(country) %>%
+  summarise(medLifeExp = median(lifeExp))
+```
+
+Look at a subset of countries with the lowest and highest median life expectancies.
+```{r}
+
+filter(medLA,medLifeExp<40)
+filter(medLA,medLifeExp>60)
+cc = c("Angola","Guinea-Bissau","Sierra Leone",
+       "Mauritius","Reunion","Tunisia",
+       "Mexico") # Mexico for comparison
+```
+
+Plot life expectancy over time. 
+Illustrate chaining of filtering (on country) and ggplot.
+
+```{r}
+gapminder %>%
+  filter(country %in% cc) %>%
+  ggplot(aes(x=year,y=lifeExp,color=country)) +
+   geom_point() +
+   geom_smooth(method = "lm")
+```
+
+Here's another interesting plot of life expectancy over time:
+
+```{r}
+gapminder %>%
+  filter(continent == "Oceania") %>%
+  ggplot(aes(x=year,y=lifeExp,color=country)) +
+  geom_point() +
+  geom_smooth(method = "loess", span=3/4)
+```
+What happend in the mid-1970s in Australia?
+
+## Life expectancy versus per capita GDP
+
+First try a simple scatterplot of `lifeExp` versus 
+`gdpPercap`.
+
+```{r}
+qplot(gdpPercap,lifeExp,data=gapminder07)
+```
+
+It is hard to make sense of the pattern in `lifeExp` versus `gdpPercap`.
+Try grouping the data by continent. (Note: This does not 
+use our `by_cont` data set. We'll talk about why later.)
+
+```{r}
+qplot(gdpPercap,lifeExp,data=gapminder07,color = continent)
+```
+
+Add regression lines for each continent. Doing so uses a
+more complicated graphing function from `ggplot2`.
+
+```{r}
+ggplot(gapminder07, aes(x=gdpPercap,y=lifeExp,color=continent)) +
+ geom_point() +
+ geom_smooth(method = "lm", se=FALSE)
+```
+
