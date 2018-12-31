@@ -1,0 +1,50 @@
+\frametitle{Aside: Plot objects}
+
+\small
+
+\begin{itemize}
+\tightlist
+\item
+  Notice that plot objects can be stored as R objects:
+\end{itemize}
+
+\tiny
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(p)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## data: carat, cut, color, clarity, depth, table, price, x, y, z
+##   [53940x10]
+## mapping:  x = carat, y = price, colour = cut
+## faceting: <ggproto object: Class FacetNull, Facet>
+##     compute_layout: function
+##     draw_back: function
+##     draw_front: function
+##     draw_labels: function
+##     draw_panels: function
+##     finish_data: function
+##     init_scales: function
+##     map: function
+##     map_data: function
+##     params: list
+##     render_back: function
+##     render_front: function
+##     render_panels: function
+##     setup_data: function
+##     setup_params: function
+##     shrink: TRUE
+##     train: function
+##     train_positions: function
+##     train_scales: function
+##     vars: function
+##     super:  <ggproto object: Class FacetNull, Facet>
+## -----------------------------------
+## geom_point: na.rm = FALSE
+## stat_identity: na.rm = FALSE
+## position_identity
+\end{verbatim}
+

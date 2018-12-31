@@ -1,0 +1,34 @@
+\frametitle{}
+
+\scriptsize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(beta1Boot,}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{beta1)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_histogram}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{lec11_files/figure-beamer/unnamed-chunk-12-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{with}\NormalTok{(beta1Boot,}\KeywordTok{sd}\NormalTok{(beta1))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 4.72912
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fit <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(mpg}\OperatorTok{~}\KeywordTok{poly}\NormalTok{(horsepower,}\DecValTok{2}\NormalTok{),}\DataTypeTok{data=}\NormalTok{Auto)}
+\KeywordTok{round}\NormalTok{(}\KeywordTok{summary}\NormalTok{(fit)}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{2}\NormalTok{,],}\DecValTok{4}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Estimate Std. Error    t value   Pr(>|t|)
+##  -120.1377     4.3739   -27.4668     0.0000
+\end{verbatim}
+

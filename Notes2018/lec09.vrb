@@ -1,0 +1,13 @@
+\frametitle{Facet wrap}
+
+\scriptsize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(gapminder,}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{log10GdpPercap,}\DataTypeTok{y=}\NormalTok{lifeExp,}\DataTypeTok{color=}\NormalTok{continent)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\NormalTok{year,}\DataTypeTok{ncol=}\DecValTok{4}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{lec09_files/figure-beamer/unnamed-chunk-29-1.pdf}
+

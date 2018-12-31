@@ -1,0 +1,45 @@
+\frametitle{Exchangeability is key assumption}
+
+\small
+
+\begin{itemize}
+\tightlist
+\item
+  Responses must be exchangeable under the null hypothesis of no
+  treatment effect
+\item
+  Cloud seeding data
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Clouds randomly seeded (S) or not (U)
+  \item
+    Clouds from several areas of Tasmania; focus on Tasmania East (TE).
+  \end{itemize}
+\end{itemize}
+
+\scriptsize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{CloudSeeding }\OperatorTok{%>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(Seeded) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{n=}\KeywordTok{n}\NormalTok{(),}\DataTypeTok{mean=}\KeywordTok{mean}\NormalTok{(TE),}\DataTypeTok{sd=}\KeywordTok{sd}\NormalTok{(TE))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 2 x 4
+##   Seeded     n  mean    sd
+##   <fct>  <int> <dbl> <dbl>
+## 1 S         14  1.09 0.671
+## 2 U         14  1.60 1.63
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  Unseeded clouds are more variable in rainfall, so they are not
+  exchangeable.
+\end{itemize}
+
