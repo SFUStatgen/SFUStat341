@@ -59,7 +59,7 @@ output:
 create an RStudio project linked to the class GitHub 
 repository as soon as possible.
 - Those still having trouble after the weekend should
-attend one of the Wednesday tutorials (12:30-2:20)
+attend one of the Wednesday tutorials (12:30-3:20)
 for help, even if these are not your tutorial times.
 
 ## R reference cards
