@@ -151,7 +151,7 @@ str(lvec)
 \scriptsize
 
 ```{r}
-lvec <- list(age=50,weight=200,height=77,hair=c("grey","thin"))
+lvec <- list(age=52,weight=200,height=77,hair=c("grey","thin"))
 ```
 
 ## Factors
@@ -288,7 +288,7 @@ lvec[3:4]
 \scriptsize
 
 ```{r}
-avec = c(age=50,weight=200,height=77)
+avec = c(age=52,weight=200,height=77)
 avec
 as.list(avec)
 ```
@@ -518,7 +518,7 @@ x>y ; x>=y ; x<y ; x<=y ; x==y ; x!=y
 avec
 avec>100
 avec[avec>100]
-avec[avec>50 & avec<100]
+avec[avec>52 & avec<100]
 ```
 
 ## Subsetting matrices with logical expressions
