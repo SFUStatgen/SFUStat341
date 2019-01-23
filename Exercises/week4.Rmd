@@ -1,0 +1,52 @@
+---
+title: "Week 4 exercises"
+author: "Brad McNeney"
+date: '2019-01-24'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Loading data from a package
+
+1. Suppose you have installed the `car` package
+(Companion to Applied Regression, developed by 
+John Fox at McMaster). Give the R commands 
+to load the package, load the `Davis` dataset
+from the package and print out the first six 
+rows of the dataset.
+
+## Adding transformed variables to a data frame
+
+2. The `Davis` dataset includes
+`weight` in kilograms and `height` in centimetres.
+Body mass index (BMI) is defined to be weight in kilograms 
+divided by the square of height in metres.
+Create a variable BMI in your workspace from 
+the Davis dataset, using `with()` to access variables
+from `Davis`
+
+3. Use the `transform()` command  to create `BMI`
+and add it to the Davis data frame.
+
+4. Load the `dplyr` package and use its
+`mutate()` function twice, along with the 
+`%>%` and `<-` operators, to add (i) `heightm`, height
+in metres, and (ii) `BMI` to the `Davis` dataset.
+
+5. BMI of 18.5 or less is considered underweight,
+BMI in (18.5,25] is normal, BMI in (25,30] is overweight, and
+BMI greater than 30 is obese.
+Use the `cut()` function to create a categorical
+variable `BMIcat` from the `BMI` variable 
+and add it to the `Davis` dataset. The minimum 
+`BMI` in the dataset is 15.8, and the maximum 
+is 36.8.
+
+
+6. The levels of the factor created by `cut()` will be 
+the intervals (e.g., `(18.5,25]`)). Relabel these
+as "underweight", "normal", "overweight", and "obese".
+
