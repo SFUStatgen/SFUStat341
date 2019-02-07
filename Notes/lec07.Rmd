@@ -1,0 +1,567 @@
+---
+title: "Lecture 7"
+author: "Brad McNeney"
+output: beamer_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Topics
+
+- Tidying, or reshaping data
+- Split-apply-combine
+
+# Tidying (Reshaping) Data
+
+## Tidying data with the tidyverse
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse) # loads dplyr, ggplot2, tidyr, etc
+```
+
+
+- Reading: Hadley Wickham's article on tidy data, available
+from GitHub (Notes folder) or canvas.
+    - Today's notes closely follow the `tidyr` vignette.
+
+- "Tidy" data is ready for analysis, with one row for
+each sampled unit and columns for the variables measured 
+on the units.
+    - Often classify variables as "explanatory" or "response"
+    
+- Tabular data and repeated measures data are often not 
+in tidy form.
+
+- Examples:
+    - Tabular data on new tuberculosis cases from WHO
+    - Repeated measures from Billboard Top 100
+    
+## Tuberculosis (TB) cases
+
+\footnotesize
+```{r}
+tb <- read.csv("tb.csv",stringsAsFactors=FALSE)
+dim(tb)
+tb[1:4,1:6]
+names(tb)[1:20]
+```
+
+## Structure of TB table
+
+\small
+
+- First column is 2-letter country code, second is year,
+third is number of new cases for that country/year.
+- Then come TB counts for different gender/age categories.
+    - `new_sp` is "new cases by positive pulmonary smear assay"
+    - gender is `m` or `f`
+    - two special age categories 0-4, 5-14,
+    - age categories 0-14, 15-24, 25-34, 35-44, 45-54, 
+    55-65, 65+, unknown (`u`)
+- Gender/age columns are not variables, they are data
+on the observed units.
+- Tidy data would have one row for each country, year, gender
+and age category, with a column of counts 
+
+## Billboard Top 100 rankings of songs
+
+\scriptsize
+```{r}
+bb <- read.csv("billboard.csv",stringsAsFactors = FALSE)
+dim(bb)
+bb[1:3,1:6]
+names(bb)[c(1:10,ncol(bb))]
+```
+
+## Structure of the Billboard table
+
+- Columns `year` through `date.peaked` describe the song,
+then `x1st.week` through `x76th.week` are the 
+chart positions for the first through 76th weeks. 
+    - If a song is on the chart for less than 76 weeks, its position is `NA` for any missing weeks.
+- Weeks are not variables, they are the time data for the 
+time series.
+
+## Tidying the Billboard data
+
+- Main step is to consolidate, or "gather" the
+rankings in the different
+weeks into a `rank` variable. 
+- Before gathering, will select/rename some of the variables.
+- After gathering, will create some new variables and 
+sort the data frame.
+
+## Select and rename
+
+- Won't need `time` or `genre`. 
+    - `select()` from `dplyr` can use `-` to de-select
+- Rename `artist.inverted`
+    - `rename()` from `dplyr` takes arguments of the form
+    `newname = oldname`
+
+\footnotesize
+
+```{r}
+bb <- 
+  bb %>% select(-time,-genre) %>% 
+  rename(artist = artist.inverted) 
+```
+
+## Gather the weeks into a "long" version of the Billboard data
+
+\small
+
+- Leave each song info variable as-is.
+- The data, or "values", are the chart positions.
+- The weeks are descriptors or "keys" for these values.
+- We want to create key-value pairs for each observation.
+    - There will be missing values, which we can remove.
+- The `gather()` function from `tidyr` gathers specified
+columns into keys (e.g., week) and values (e.g., rank).
+
+## `gather()` for the Billboard data
+
+\scriptsize
+```{r}
+# gather (data, key, value, ... ) where ... are the columns to collapse
+bblong <- gather(bb,week,rank,x1st.week:x76th.week,na.rm=TRUE)
+head(bblong,n=4)
+```
+
+## More cleaning suggested in the vignette
+
+\small
+
+- Extract week numbers from `week` variable
+- Coerce `date.entered` to a `Date` object
+- Calculate the date of each ranking based on 
+the date it entered the charts and the week.
+- Sort ("arrange") on artist, track and week.
+
+\scriptsize
+```{r, warning=FALSE, message=FALSE}
+bb <- 
+  bblong %>% mutate(week = parse_number(week),
+              date = as.Date(date.entered) + 7*(week-1)) %>%
+  select(-date.entered) %>% # don't need date.entered anymore
+  arrange(artist,track,week)
+head(bb,n=3)
+```
+
+## Tidying the TB data
+
+- Recall structure of the data: country, year, count of new cases, counts of new cases by 
+gender/age categories.
+
+\scriptsize
+
+```{r}
+names(tb)[1:10]
+```
+
+\normalsize
+
+- Main step is to "gather" TB prevalence in the different
+gender/age categories into a count variable.
+    - Complicated by the coding of gender/age categories
+- Before gathering, will remove unneeded variables and
+add country names to supplement 2-letter codes.
+
+
+## Remove variables
+
+- Won't need overall count
+- Special categories 0-4 and 5-14 overlap with 0-14 so remove
+- Age unknown not useful for analysing trends, so remove 
+
+\scriptsize
+```{r}
+tb <- select(tb,-new_sp, -contains("04"), -contains("514"),
+             -new_sp_mu, -new_sp_fu)
+tb[1:3,1:10]
+```
+
+## Add country names to supplement country codes
+
+\footnotesize
+
+- I found a translation of the ISO-2 country codes at
+[http://data.okfn.org/data/core/country-list] and saved
+as `countryCodes.csv` in the `Notes` folder. 
+```{r}
+cc <- read.csv("countryCodes.csv",stringsAsFactors = FALSE)
+# cc has columns "Name" and "Code". "Code" matches "iso2" in tb
+```
+
+##
+
+- Exercise: Find out which ISO-2 codes are in `tb` but not in 
+`countryCodes.csv`, google the missing codes, and 
+add the country names to `cc` manually.
+
+\scriptsize
+
+```{r}
+unique(tb$iso2[!(tb$iso2 %in% cc$Code)])
+cc <- rbind(cc, data.frame(Name=c("Netherlands Antilles","Yugoslavia"),
+                          Code=c("AN","YU")))
+tb <- inner_join(cc,tb,by = c("Code" = "iso2")) 
+tb[1:2,1:6]
+```
+
+
+## Gather counts for demographic groups
+
+\footnotesize
+
+- Create demographic variable `demog` and count variable `count` 
+by gathering over all variables except `Name`, `Code` and `year`.
+
+```{r}
+tblong <- gather(tb,demog,count,-Name,-Code,-year,na.rm=TRUE)
+head(tblong)
+```
+
+## Separate gender from age category.
+
+\small
+
+- First remove `new_sp_`, then separate result on first column (`help(separate)`)
+```{r}
+maxlen <- max(nchar(tblong$demog))
+tblong %>% mutate(demog = substr(demog,8,maxlen)) %>%
+  separate(demog, into=c("gender","agecat"),sep=1) -> tb
+head(tb)
+save(tb,file="tb.RData")
+```
+
+
+# Split-Apply-Combine
+
+## Subgroup summaries
+
+\small
+
+- Data visualization and modelling is often
+in terms of subgroups.
+- Illustrate with some data on enrollments
+in Stat and Act Sci courses over the 2007/08 to
+2015/16 academic years.
+    - Data on full-time equivalents
+    (FTEs, equal to 30 credit hours taught)
+    by year and course.
+- Recurring theme: Need to split the data into subgroups, 
+transform or summarize, and reassemble, or unsplit.
+    - Has come to be known as "split-apply-combine"
+
+## Science enrollments database
+
+\small
+
+- Load the `scilong` data frame created by
+`FTE.Rmd` 
+    - Look through the `FTE.Rmd` script if you 
+    haven't already.
+    
+\scriptsize
+
+```{r,warning=FALSE,message=FALSE}
+library(tidyverse)
+load("scilong.RData")
+head(scilong)
+```
+
+## Stat and Act Sci data 
+
+\scriptsize
+
+```{r}
+stat <- filter(scilong,Subject=="STAT" | Subject=="ACMA")
+head(stat)
+```
+
+## Split-apply-combine example 1: yearly percent FTEs
+
+\small
+
+- Suppose we want the percent of FTEs in a year
+that are attributable to each course taught.
+- Split the data by year, 
+compute proportion of FTEs for each course in that year,
+and combine the proportions into a variable that 
+can be included in the `stat` data frame.
+- Illustrate base R and `dplyr` approaches.
+
+## Example 1: split
+
+\small
+
+- The base R function `split()` splits a data frame
+on a grouping variable, which is a vector or 
+list of vectors that can be coerced to factor(s),
+and returns a list.
+
+\scriptsize
+
+```{r}
+sp.stat <- split(stat,stat$year)
+names(sp.stat)
+head(sp.stat[["2008"]])
+str(sp.stat[["2008"]])
+```
+
+## Example 1: Split, cont.
+
+\scriptsize
+
+```{r}
+sp.stat <- split(stat,list(stat$year,stat$Subject))
+names(sp.stat)
+head(sp.stat[["2008.STAT"]])
+```
+
+## `group_by()` from `dplyr`
+
+\small
+
+- Call is similar to `split`, but we specify multiple
+variables to group on by comma-separated
+names.
+- Output is a `tibble` (data frame with some different
+default behaviours). 
+
+\scriptsize
+
+```{r}
+sp.stat.dplyr <- group_by(stat,year,Subject)
+sp.stat.dplyr
+```
+
+
+## Example 1: Apply 
+
+\small
+
+- Create a new variable
+`FTEproportion = FTEs/sum(FTEs)` for each 
+sub-group data frame and save the new variable
+in the respective data frames.
+- Can use the base R function `lappy()`
+    - stands for "list apply" -- apply a function to 
+    each element of a list and return a list as output
+- It turns out the following call to `lapply()` does what
+we want. 
+
+\scriptsize
+
+```{r}
+tem <- lapply(sp.stat,transform,FTEproportion=FTEs/sum(FTEs))
+```
+
+\small
+
+- To see why, start with simpler uses of `lapply()`.
+
+## Simpler example of `lapply()`
+
+\small
+
+- Define a function to apply to each list element and
+apply it:
+```{r}
+fsum <- function(x) { # x is a list element
+  sum(x$FTEs) # assumes list elements have an FTEs column
+}
+tem <- lapply(sp.stat,fsum)
+tem[1:2]
+```
+
+## Simpler example, cont.
+
+\small
+
+- If our function takes more arguments than just
+the list element, we add them after the function name.
+
+\scriptsize
+
+```{r}
+fsum <- function(x,cname) {
+  sum(x[,cname]) 
+}
+tem <- lapply(sp.stat,fsum,"FTEs")
+tem[1:2]
+```
+
+## Our use of `lapply()`
+
+\small
+
+- Adding a column to each sub-group data frame 
+requires a function that takes the data frame
+as an argument and returns the augmented version.
+    - This is what `transform()` does
+
+\scriptsize
+
+```{r}
+head(transform(sp.stat[[1]],FTEproportion = FTEs/sum(FTEs)))
+```
+
+
+## Putting it all together
+
+\scriptsize
+
+```{r}
+sp.stat <- lapply(sp.stat,transform,FTEproportion=FTEs/sum(FTEs))
+head(sp.stat[[1]])
+```
+
+## Detour: The apply family of functions in R
+
+\small
+
+- The "original" apply is `apply()`, which can 
+be used to apply a function to rows or columns 
+of a matrix.
+
+\scriptsize
+
+```{r}
+mat <- matrix(1:6,ncol=2,nrow=3)
+mat
+apply(mat,1,sum) # row-wise sums; rowSums() is faster
+apply(mat,2,sum) # column-wise; colSums() is faster
+```
+
+## Detour, cont.
+
+\small
+
+- `sapply()` takes the output of `lapply()` and simplifies
+to a vector or matrix.
+
+\scriptsize
+
+```{r}
+fsum <- function(x) { sum(x$FTEs) }
+sapply(sp.stat,fsum)[1:2]
+````
+
+## Detour, cont.
+
+\small
+
+- Other `apply`-like functions `vapply()`, `mapply()`,
+`tapply()`, ...
+- I don't use these.
+    - See their respective help pages for information.
+    
+
+
+## The apply step with `dplyr`
+
+\small
+
+- Actions ("verbs") like `mutate()` are applied
+to the data within groups when passed a 
+grouped object.
+    - That is, the data table is broken into groups and 
+    `mutate()` is applied separately to each group.
+    
+\scriptsize
+
+```{r}
+sp.stat.dplyr <- mutate(sp.stat.dplyr,FTEpp = FTEs/sum(FTEs))
+select(sp.stat.dplyr,Subject,FTEs,year,FTEpp)
+```
+
+## The combine step
+
+\small
+
+- The base R function `unsplit()` will combine
+the elements of the list that was generated by `split()`
+- Pass `unsplit()` the list of variables used
+to define the splits.
+
+\scriptsize
+
+```{r}
+head(unsplit(sp.stat,list(stat$year,stat$Subject)))
+```
+
+## The combine step with `dplyr`
+
+\small
+
+- Use `ungroup()`
+
+\scriptsize
+
+```{r}
+ungroup(sp.stat.dplyr) 
+```
+
+## Summary of split-apply-combine
+
+\scriptsize
+
+- Base R:
+
+```{r}
+sp.stat <- split(stat,list(stat$year,stat$Subject))
+sp.stat <- lapply(sp.stat,transform,FTEproportion = FTEs/sum(FTEs))
+stat <- unsplit(sp.stat,list(stat$year,stat$Subject))
+```
+
+- `dplyr`
+
+```{r}
+stat %>% group_by(year,Subject) %>% 
+  mutate(FTEproportion = FTEs/sum(FTEs)) %>%
+  ungroup() -> stat
+save(stat,file="statEnrol.RData")
+```
+
+## Split-apply-combine with `summarise()`
+
+\small
+
+- In the apply step, we may wish to calculate some
+sort of summary, rather than a transformation
+of a variable.
+- For example, suppose we want to calculate 
+total FTEs by year and subject, and return 
+a data frame
+
+\scriptsize
+
+```{r}
+stat %>% group_by(year,Subject) %>% 
+  summarise(totalFTEs = sum(FTEs)) %>%
+  ungroup() -> totals
+head(totals,n=4)
+```
+
+## Split-apply-combine with `lapply()`
+
+\small
+
+- Compare to base R
+
+\scriptsize
+
+```{r}
+tem <- split(stat,list(stat$year,stat$Subject))
+tem <- lapply(tem,function(x) sum(x$FTEs))
+tem[1:4]
+```
+
+- Then would have to write code to coerce 
+output to a data frame.
+
+

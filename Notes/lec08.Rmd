@@ -1,0 +1,691 @@
+---
+title: 'Lecture 8'
+author: "Brad McNeney"
+output: 
+  beamer_presentation:
+    includes:
+      in_header: header_pagenum.tex
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,message=FALSE,warning=FALSE)
+```
+
+# Iterating
+
+## Iterating
+* Reference: Iteration chapter of R for Data Science by 
+Wickham and Grolemund.
+    - Published book: Chapter 17
+    - Online book: Chapter 21: http://r4ds.had.co.nz/iteration.html
+
+* The use of `lapply()` in the previous lecture is 
+an example of iterating:
+    - Our data is in a vector (list), and we want to perform
+    the same operation on each element.
+* Tools that we have discussed that are useful for iterating are 
+`for()` and `while()` loops.
+* Iteration is so common that special tools have been developed
+with the aim of reducing the amount of code (and therefore
+errors) required for common iterative tasks.
+    - Tools in base R include the `apply()`
+    family of functions. 
+    - A tidyverse package called `purrr` includes more.
+    
+## Example data
+
+* To illustrate iteration we simulate data and fit four 
+regression models.
+
+\small
+
+```{r}
+set.seed(42)
+n <- 100
+x1 <- rnorm(n); x2<-rnorm(n)
+y1 <- x1 + rnorm(n,sd=.5); y2 <- x1+x2+rnorm(n,sd=.5)
+y3 <- x2 + rnorm(n,sd=.5); y4 <- rnorm(n,sd=.5)
+rr <- list(fit1 = lm(y1 ~ x1+x2),
+  fit2 = lm(y2 ~ x1+x2),
+  fit3 = lm(y3 ~ x1+x2),
+  fit4 = lm(y4 ~ x1+x2))
+```
+
+## Extracting the regression coefficient for `x1`
+
+* Using a `for()` loop, we initialize an object to hold the 
+**output**, 
+loop along a **sequence** of values for an index variable, 
+and execute the **body** for each value of the index variable.
+
+\small
+
+```{r}
+beta1hat <- vector("double",length(rr))
+for(i in seq_along(rr)) { # safer than 1:length(rr) 
+  beta1hat[i] <- coefficients(rr[[i]])["x1"]
+}
+beta1hat
+```
+
+## Looping over elements of a set
+
+* The index set in the `for()` loop can be general. 
+    - We might use this generality to loop over named components of a list.
+    
+\small
+
+```{r}
+fits <- paste0("fit",1:4)
+for(ff in fits) {
+  print(coefficients(rr[[ff]])["x1"])
+}
+```
+
+\normalsize
+
+* Looping over a set makes it harder to save the results, though.
+
+## The body of a loop can be a small part of the code
+
+* In our examples, most of the code is for setting up the 
+output and looping, with very little to do with the body.
+
+* To illustrate, consider a small change: instead of the estimated coefficient of `x1` we wanted
+the estimated coefficient of `x2`:
+
+\small
+
+```{r}
+beta1hat <- vector("double",length(rr))
+for(i in seq_along(rr)) { # safter than 1:length(rr) 
+  beta1hat[i] <- coefficients(rr[[i]])["x2"]
+}
+beta1hat
+```
+
+## Using `lapply()`
+
+* The intent of `lapply()` is to take care of 
+the output and the loop, allowing us to focus 
+on the body.
+
+\scriptsize
+
+```{r}
+b1fun <- function(fit) { coefficients(fit)["x1"] } # body
+bfun <- function(fit,cc) { coefficients(fit)[cc] } # body
+lapply(rr,b1fun)  # or sapply(rr,b1fun) or unlist(lapply(rr,b1fun))
+lapply(rr,bfun,"x2")  
+```
+
+## Iterating with the `map()` functions from `purrr`
+
+* The `purrr` package provides a family of functions 
+`map()`, `map_dbl()`, etc. that do the same thing
+as `lapply()` but work better with other tidyverse functions.
+    * `map()` returns a list, like `lapply()`.
+    * `map_dbl()` returns a double vector, etc.
+
+\small
+
+```{r}
+library(purrr)
+map_dbl(rr,b1fun) # or rr %>% map_dbl(b1fun)
+```
+
+
+## Pipes and `map()` functions
+
+* Suppose we want to record a model summary returned by 
+the `summary()` function.
+    * `summary()` is a generic function. When applied to
+    an `lm()` object it computes regression summaries like
+    standard errors and model R$^2$.
+
+\small
+
+```{r}
+rr %>%
+  map(summary) %>%
+  map_dbl(function(ss) { ss$r.squared })
+```
+
+\normalsize
+
+## 
+
+* Notice that we can define a function on-the-fly in the
+call to a `map()` function.
+
+* `map()` functions have a short-cut for function
+definitions.
+
+\small
+
+```{r}
+rr %>%
+  map(summary) %>%
+  map_dbl(~.$r.squared)
+```
+
+\normalsize
+
+* In `~.` read `~` as "define a function" and `.` as "argument to 
+the function"
+    - Comment: This is a little too terse for my tastes,
+    but I mention it in case you see it in practice.
+
+# Exploratory Data Analysis
+
+## Topics
+
+- Exploratory data analysis, with emphasis
+on `ggplot2` graphics, using the gapminder data.
+    - Suppose we want to use information on `continent`, `year`,
+    `pop` and `gdpPercap` to predict `lifeExp`.
+- Base R graphics _vs_ grid graphics
+- Introduction to `ggplot2`
+
+# Exploratory analyses
+
+## Exploratory analyses
+
+\small
+
+- Univariate summaries, such as means/medians, sds/IQRs, histrograms, to examine distributions 
+and identify possible measurement errors.
+- Pair-wise correlations, to look for relationships between variables
+- Pair-wise regression relationships and added-variable-plots
+    - Trends over time deserve special attention
+- Illustrate with the `gapminder` data set.
+
+\small
+
+```{r}
+library(gapminder)
+data(gapminder)
+```
+    
+## Univariate Summaries
+
+\small
+
+- Different summaries are appropriate for categorical and quantitative
+variables
+    - Tabulate categorical variables
+    - Five number summary for quantitative variables
+
+\scriptsize
+
+```{r}
+summary(gapminder)
+```
+
+## Comments on summaries
+
+- Observations in `pop` and `gdpPercap` differ
+by orders of magnitude
+    - May be more informative to consider transformations
+    of these variables.
+    - For example, a log-10 transformation: one-unit 
+    differences correspond to 10-fold increases.
+- Aside: Which country has per-capita GDP of \$113,523? Or more
+generally, which observations are in, say, the top 0.1\%?
+
+\scriptsize
+
+```{r}
+library(dplyr)
+filter(gapminder,gdpPercap > quantile(gdpPercap,0.999))
+```
+
+
+## Unviariate summaries by grouping variable
+
+\small
+
+- May be of interest to do summaries of 
+some variables stratified by a grouping 
+variable.
+
+\scriptsize
+
+```{r}
+oldops <- options(tibble.width=Inf, tibble.print_max=Inf)
+gm_byContinent <- group_by(gapminder,continent)
+summarize(gm_byContinent,min(lifeExp),median(lifeExp),
+          IQR(lifeExp),mean(lifeExp),sd(lifeExp),max(lifeExp))
+options(oldops)
+```
+
+## Boxplots
+
+\small
+
+- Graphical representation of the five number summary for 
+grouped data
+
+\scriptsize
+
+```{r, fig.width=4, fig.height=2.5}
+library(ggplot2)
+ggplot(gapminder,aes(x=continent, y=lifeExp)) + geom_boxplot()
+```
+
+## Boxplots, cont.
+
+\scriptsize
+
+```{r, fig.width=4, fig.height=2.5}
+ggplot(gapminder,aes(x=continent, y=gdpPercap)) + geom_boxplot() 
+```
+
+- Distribution of log-transformed data may be more informative.
+
+## Boxplots, cont.
+
+\scriptsize
+
+```{r, fig.width=4, fig.height=2.5}
+ggplot(gapminder,aes(x=continent, y=gdpPercap)) +
+  coord_trans(y="log10") + geom_boxplot() 
+```
+
+## Adding transformed variables to a dataset
+
+\small
+
+- Above suggests we add log of `gdpPercap` to the dataset.
+- A similar exploration of the `pop` variable suggests we
+include log of `pop` too.
+- Will use log-base-10.
+
+\scriptsize
+
+```{r}
+gapminder <- mutate(gapminder, 
+                    log10Pop = log10(pop), 
+                    log10GdpPercap = log10(gdpPercap))
+```
+
+
+## Histograms
+
+\small
+
+- Shows the shape of distributions and 
+can suggest possible outliers 
+- Stacked histograms:
+
+\scriptsize
+
+```{r, fig.width=4, fig.height=2.5, message=FALSE}
+ggplot(gapminder,aes(x=lifeExp, color=continent)) + geom_histogram()
+```
+
+## Histograms, continued
+
+- Histograms in different plot panels, or "facets":
+
+\scriptsize
+
+```{r, fig.width=4, fig.height=2.5, message=FALSE}
+ggplot(gapminder,aes(x=lifeExp, color=continent)) + 
+  geom_histogram() + facet_grid(continent ~ .)
+```
+
+## Histograms of the explanatory variables
+
+- May also be of interest 
+
+\scriptsize
+
+```{r, fig.width=4, fig.height=2.5, message=FALSE}
+ggplot(gapminder,aes(x=log10GdpPercap, color=continent)) +
+  geom_histogram() + facet_grid(continent ~ .)
+```
+
+
+
+## Pairwise Regression relationships
+
+\small
+
+- Though pairwise relationships don't tell the whole story,
+they are a useful starting point.
+- The `GGally` package provides the function `ggpairs()`
+to facilitate this.
+    - Can do all possible pairs
+    of variables, but I find this too hard to read for more
+    than three  variables.
+    
+## Pairwise plots
+    
+\scriptsize
+
+```{r, fig.width=4, fig.height=3, message=FALSE, warning=FALSE}
+library(GGally)
+gm_sub <- select(gapminder,continent,lifeExp,log10GdpPercap)
+ggpairs(gm_sub) # Cut and paste into console to see better
+```
+
+## Time trends
+
+\small
+
+- Can represent time series by lines.
+- There are many time series in these data -- need to 
+make each line slightly transparent to account for overplotting 
+
+\scriptsize
+
+```{r, fig.height=3, fig.width=4, message=FALSE}
+ggplot(gapminder,aes(x=year,y=lifeExp,group=country)) +
+  geom_line(alpha=0.2)
+```
+
+## Time trends, cont.
+
+\scriptsize
+
+- Can add a statistical summary, like medians at each time,
+or a smoother.
+- Can also add colours for different continents.
+
+```{r, fig.height=3, fig.width=4, message=FALSE}
+ggplot(gapminder,aes(x=year,y=lifeExp,group=country,
+                     color=continent)) + geom_line(alpha=0.2) + 
+  geom_smooth(aes(x=year,y=lifeExp,group=continent),se=FALSE)
+```
+
+# Base R graphics
+
+## Base R graphics
+
+\small
+
+- Very serviceable graphics system capable of 
+producing publication-quality graphs.
+- Create graphics by calling functions that either 
+produce complete plots or add to plots
+- Like adding paint to a canvas
+
+## Base R examples
+
+\scriptsize
+
+```{r, fig.width=4,fig.height=3}
+with(gapminder,plot(log10GdpPercap,lifeExp)) # or plot(lifeExp ~ log10GdpPercap)
+title(main="life expectance vs log10 GDP percapita")
+abline(lm(lifeExp ~ log10GdpPercap,data=gapminder),col="red",lwd=3)
+```
+
+## Base R examples
+
+\scriptsize
+
+```{r, fig.height=3, fig.width=4}
+with(gapminder,boxplot(split(lifeExp,continent)))
+```
+
+## Base R examples
+
+\scriptsize
+
+```{r, fig.height=3, fig.width=4}
+with(gapminder,plot(density(lifeExp)))
+```
+
+## Base R graphics: Where to learn more
+
+- Paul Murrell's book:
+[https://www.stat.auckland.ac.nz/~paul/RG2e/]
+- Ross Ihaka's lectures:
+[https://www.stat.auckland.ac.nz/~ihaka/787/lectures-r-graphics.pdf]
+
+# `grid` graphics
+
+## `grid` graphics
+
+\small
+
+- `grid` graphics is a low-level graphics system that 
+allows fine control of graphics elements
+- Users can create multiple
+graphics regions, or "viewports",
+that are arranged on the graphics device or nested within 
+one another.
+- Graphical objects, or "grobs" can be created and 
+drawn on these viewports (e.g., lines, shapes).
+- Grobs can be editted (e.g., change color of lines) and 
+re-drawn
+
+## `grid` graphics: Where to learn more
+
+- Paul Murrell's book:
+[https://www.stat.auckland.ac.nz/~paul/RG2e/]
+
+
+# `ggplot2` basics
+
+## `ggplot2` 
+
+- `ggplot2` is implemented in `grid` graphics
+- The `g`'s stand for Grammar of Graphics. 
+    - Like English grammar is the way in which words
+    are put together to form sentences, a grammar of 
+    graphics is a way to put together basic graphical 
+    elements to make a graph.
+- To understand the grammar we need to define the 
+basic elements.
+    - Start with definitions (in bold), some of which are 
+    too abstract to be useful until we get into 
+    details.
+- `ggplot`s can be built in layers, comprised of 
+**data** a **mapping**, a **geom** and optionally **stats**
+- The layers are arranged and labelled on the graph
+by **scale**s and **coord**s.
+- The data can also be broken into subsets and displayed
+in separate graphs by a **facet** specification.
+
+## Components of a `ggplot`: data and mappings
+
+\small
+
+- We start with the **data** we want to visualize and
+a **mapping**, or aesthetic, that describes how these
+data map to attributes on the plot.
+
+\scriptsize
+
+```{r, fig.width=3, fig.height=2}
+p <- ggplot(gapminder,aes(x=log10GdpPercap,y=lifeExp,color=continent))
+```
+
+- From the dataset `gapminder`, the variable 
+`log10GdpPercap` will be mapped to y-coordinates,
+`lifeExp` will be mapped to the x-coordinates,
+and `continent` will be perceived as colours.
+
+## Components of a `ggplot`: geometric objects (geoms)
+
+\small
+
+- Geometric objects or **geoms** are things like
+points and lines that we see on the plot.
+
+\scriptsize
+
+```{r, fig.width=4, fig.height=3}
+p2 <- p + geom_point(alpha=0.5) 
+```
+
+- alpha is the transparency aesthetic, between 0 and 1, best
+applied directly to the geom.
+
+## Components of a `ggplot`: statistical transformations
+
+\small
+
+- Statistical transformations or **stats** summarize  the data;
+e.g., a scatterplot smoother
+
+\scriptsize
+
+```{r, fig.width=4, fig.height=2}
+p2 + stat_smooth()
+```
+
+
+## Components of a `ggplot`: scales
+
+\small
+
+- The **scales** are mappings from the data to the graphics device
+    - domain of `continent` is the five continents, range is
+    the hexidecimal of the 
+    five colors represented on the graph
+    - domain of `lifeExp` is 23.599 to 82.603, range is [0,1],
+    which `grid` converts to a 
+    range of vertical pixels on the graph.
+    - legends and axes provide the inverse mapping
+
+\scriptsize
+
+```{r, fig.width=4, fig.height=1.7}
+p2
+```
+
+
+## Components of a `ggplot`: coodinate system
+
+\small
+
+- The coordinate system is another layer in how the data
+get mapped to the graphics device. 
+    - Usually Cartesian, but could be, e.g., polar coordinates,
+    or a transformation.
+\scriptsize
+
+```{r, fig.width=4, fig.height=2}
+ggplot(gapminder,aes(x=gdpPercap,y=lifeExp,color=continent)) + 
+  geom_point(alpha=0.5) + coord_trans(x="log10")
+```
+
+
+## Components of a `ggplot`: faceting
+
+\small
+
+- How to break up the data into subsets and arrange
+multiple plots on the graphics device.
+
+\scriptsize
+
+```{r, fig.width=4, fig.height=2}
+p2 +  facet_grid(continent ~ .)
+```
+
+## Why so many components?
+
+\small
+
+- A framework for the components of a graph.
+- Gives the user the ability to change indvidual 
+components one at a time.
+
+## More details
+
+- Layers 
+    - data, aesthetic mapping, geom, statistical transformation 
+    and position adjustment (to be defined)
+- Tools for working with layers
+- Scales, axes and legends
+- Positioning: faceting and coordinate systems
+
+## Example dataset: Diamonds
+
+\small
+
+- Price and quality of about 54,000 diamonds.
+- Quality measures are carat (size), cut, colour and clarity
+- Also included are three measures of the dimensions of 
+each diamond labelled x, y and z.
+
+\scriptsize
+
+```{r}
+data(diamonds)
+head(diamonds)
+```
+
+## Initialization 
+
+\small
+
+- We first initialize the plot.
+- Initializing is done with `ggplot()`.
+    - We usually specify the default data and aesthetic 
+    mappings for all subsequent layers, though this is not
+    necessary.
+    - Without layers, the plot is not displayed.
+
+\scriptsize
+
+```{r}
+p <- ggplot(diamonds,aes(x=carat,y=price,colour=cut))
+```
+
+## Adding layers
+
+\small
+
+- Add with a `+`
+- The `layer()` function can be used to specify a 
+geom, stat and position 
+    - data and mapping will be inherited from initialization
+
+\scriptsize
+
+```{r,fig.width=4,fig.height=2.5}
+p + layer(geom="point", stat="identity", position="identity")
+```
+
+- The data and aesthetic mapping for the layer are
+inherited from the initialization.
+
+
+## Shortcuts for adding layers
+
+\small
+
+- Shortcut functions are of the form `geom_XXX()` and
+`stat_XXX()`.
+    - The `geom_XXX()` functions have a default stat and position
+    - The `stat_XXX()` functions have a default geom and position
+    - The `geom_XXX()` can over-ride the default stat and 
+    the `stat_XXX()` can over-ride the default geom though
+- Call on the previous slide is equivalent to 
+
+\scriptsize
+
+```{r}
+p <- p + geom_point() 
+```
+
+## Aside: Plot objects
+
+\small
+
+- Notice that plot objects can be stored as R objects:
+
+\tiny
+
+```{r}
+summary(p)
+```
+
+
+
