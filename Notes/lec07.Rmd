@@ -23,7 +23,7 @@ library(tidyverse) # loads dplyr, ggplot2, tidyr, etc
 
 
 - Reading: Hadley Wickham's article on tidy data, available
-from GitHub (Notes folder) or canvas.
+from GitHub (Notes folder).
     - Today's notes closely follow the `tidyr` vignette.
 
 - "Tidy" data is ready for analysis, with one row for
