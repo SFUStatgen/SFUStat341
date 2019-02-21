@@ -1,7 +1,7 @@
 ---
 title: "Stat 341 Homework 2"
 author: "Name1 and Name2 and Name3"
-date: '2019-02-28'
+date: '2019-03-04'
 output: html_document
 ---
 
