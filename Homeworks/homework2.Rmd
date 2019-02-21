@@ -1,0 +1,70 @@
+---
+title: "Stat 341 Homework 2"
+author: "Name1 and Name2 and Name3"
+date: '2019-02-28'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,message=FALSE,warning=FALSE)
+```
+
+In this assignment we work with genotype data on 11 genetic markers
+measured on 174 subjects. You do not need to know anything about
+genotypes other than the fact that they take values 0, 1 or 2. 
+The data are contained in a matrix with rows for subjects
+and columns for markers in the file `snpMatrix.csv`.
+The first column of `snpMatrix.csv` is the name of 
+the subject and the other 11 columns are the marker
+genotype data.
+Further information on the markers is contained in `snpSupport.csv` and further
+information on the subjects is contained in `subjectSupport.csv`.
+
+Read in the data with the following code chunk.
+
+```{r}
+snpMatrix <- read.csv("snpMatrix.csv",stringsAsFactors = FALSE)
+snpSupport <- read.csv("snpSupport.csv", stringsAsFactors = FALSE)
+subjectSupport <- read.csv("subjectSupport.csv", stringsAsFactors = FALSE)
+```
+
+1. (2 marks) Create a "long" version of the `snpMatrix` data
+called `snpLong`
+with a key variable named `snp` and a value variable named `genotype` 
+comprised of the marker genotypes.
+
+
+2. (2 marks) Taken together, `snpLong`, `snpSupport` 
+and `subjectSupport` are a relational dataset. What are
+the names of the primary keys of the `snpSupport` and `subjectSupport`
+data frames?
+
+
+3. (2 marks) Create a SQLite database called `snp` that contains
+the `snpLong`, `snpSupport` 
+and `subjectSupport` dataframes as its tables. List the tables
+and then remove the database connection and the file on
+your computer.
+(Note: We will **not** use this database in the questions to follow.)
+
+
+4. (3 marks)
+Starting from the dataframes `snpLong`, `snpSupport` and
+`subjectSupport`, use functions from dplyr and stringr
+to produce a dataframe with columns `Sample.name`, `snp`
+and `genotype` for (i) subjects listed as `female` in `subjectSupport`
+and (ii) markers that have the string `SNP` in the `assayLSID` column
+of `snpSupport`. Save your results in a dataframe called
+`snpFemaleSNP` and print out the first six rows
+of `snpFemaleSNP` with the `head()` function.
+
+
+5. (0 marks) We did not discuss the `spread()` function in class.
+It is the opposite of `gather()`. Cut-and-paste
+the following code chunk to produce a dataset with rows for 
+subjects and columns for markers based on `snpFemaleSNP`
+
+```{r}
+dat <- spread(snpFemaleSNP,key=snp,value=genotype)
+head(dat)
+```
