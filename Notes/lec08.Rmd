@@ -32,6 +32,34 @@ errors) required for common iterative tasks.
     - Tools in base R include the `apply()`
     family of functions. 
     - A tidyverse package called `purrr` includes more.
+
+## Vectorizing to avoid iteration
+
+* Before iterating, think about whether it is 
+possible to use vectorization instead.
+* Example:
+
+\scriptsize
+```{r}
+f <- function(x) {
+  n <- length(x); out <- vector(mode="numeric",length=n)
+  for(i in 1:n) {
+    if(x[i]>0) {
+      out[i] <- log(x[i])
+    } else {
+      out[i] <- NA
+    }
+  }
+  out
+}
+fvec <- function(x) {
+  n <- length(x); out <- vector(mode="numeric",length=n)
+  ind <- (x>0)
+  out[ind] <- log(x[ind])
+  out[!ind] <- NA # recycles NA
+  out
+}
+```
     
 ## Example data
 
