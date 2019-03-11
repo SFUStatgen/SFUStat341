@@ -1,0 +1,60 @@
+---
+title: "Homework 3"
+author: "Name1, Name2, Name3"
+date: '2019-03-25
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load packages
+
+```{r, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(stringr)
+library(nycflights13)
+library(DBI)
+```
+
+## Questions
+
+0. (0 marks) If you haven't already, install
+the `nycflights13` package and read the 
+help files on the 
+`flights` and `airlines` tables.
+
+1. (1 mark) 
+Use `dplyr` functions to perform an inner join between the `airlines` table
+and the `flights` table on `carrier` and 
+then select the variables
+`carrier`, `name`, `month`, `day`, `dep_time`
+and `dep_delay`.
+Save your dataframe in `flights`.
+
+2. (2 marks) Remove Inc., Co. and Corporation from the airline names in the
+`name` variable of `flights`. Then shorten the phrases "Airlines",
+"Air Lines", and "Airways" to just "Air". Print out the 
+unique values of `flights$name`.
+
+
+3. (2 marks) Select the flights from January. Calculate the median departure 
+delay for each airline on each day and save the results in a 
+dataframe called fldelaysJan. Plot median delay versus day, 
+with different facets for each airline. (Note that
+the `median()` function in R has an argument `na.rm`
+that you may wish to set to `FALSE`.) 
+Use the `name` variable
+to specify airlines (instead of `carrier`) so that the labels
+on your facets are informative. Do **not** free
+the scales on the facets.
+
+4. (2 marks) The plot in part (3) is not very informative because one airline 
+had a very long median flight delay on one day in January. Remove this 
+**one observation** from `fldelaysJan`. Also remove 
+the airline
+that had flights on only one day. Now redo the plot in (3).
+Again, do **not** free the scales on the facets.
+
