@@ -45,7 +45,7 @@ delay for each airline on each day and save the results in a
 dataframe called fldelaysJan. Plot median delay versus day, 
 with different facets for each airline. (Note that
 the `median()` function in R has an argument `na.rm`
-that you may wish to set to `FALSE`.) 
+that you may wish to set to `TRUE`.) 
 Use the `name` variable
 to specify airlines (instead of `carrier`) so that the labels
 on your facets are informative. Do **not** free
