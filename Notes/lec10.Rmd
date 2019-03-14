@@ -167,12 +167,13 @@ hist(x)
 \scriptsize
 
 ```{r,fig.width=4,fig.height=2.5}
+library(ggplot2)
 set.seed(8675309)
 xbar <- vector(mode="numeric",length=Nsim)
 for(i in 1:Nsim) {
   xbar[i] <- mean(rexp(n=30,rate=5))
-}
-qqnorm(xbar); abline(a=mean(xbar),b=sd(xbar),col="red")
+  }
+ggplot(data.frame(xbar=xbar),aes(sample=xbar)) + geom_qq() + geom_qq_line()
 ```
 
 
@@ -351,6 +352,7 @@ fstatPerm <- function() {
   mm <- lm(Noise ~ Type, data=permdat)
   tidy(anova(mm))[1,5]
 }
+set.seed(1)
 pdist <- replicate(1000,fstatPerm())
 mean(pdist > Fstat) # permutation p-value
 ```
