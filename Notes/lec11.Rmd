@@ -49,16 +49,17 @@ test observations $(x_0,y_0)$.
 * The test MSE is defined as
 $${\rm Ave}(y_0 - \hat{f}(x_0))^2,$$
 where the average is over future $x_0$'s.
-* We then average this average over 
-repeated samples of training data.
-* Picture this as repeating the following:
-    1. Sample training and test data
-    2. Train the model, and use on the test data
-    to obtain the average squared error
-    
-    and averaging the average from step 2.
-* With just one training and test set we can 
+* With a finite test set we
 get an *estimate* of the test error.
+
+* A related quantity is the **expected**
+test error, in which we average the above over 
+repeated samples of training data.
+* Picture expected test error as repeating the following:
+    1. Sample training and test data
+    2. Train the model, and evaluate on test data.
+* With just one training and test set we 
+get an *estimate* of the expected test error.
     
 ## Validation
 
@@ -168,6 +169,7 @@ ggplot(tMSE,aes(x=degree,y=testMSE,color=validn))+ geom_line()
 
 ## Cross-Validation (CV)
 
+* Estimates the expected test error.
 * Rather than a single data split,
 do multiple splits into "folds" of approximately
 equal size.
@@ -326,7 +328,7 @@ the sampling distribution of inferential statistics.
 * Bootstrap may give reasonable uncertainty
 estimates when assumptions for traditional 
 inference don't hold.
-* We can expand the definition of the "procedure""
+* We can expand the definition of the "procedure"
 to include variable selection, rather than just model 
 fitting for a given model complexity.
 
