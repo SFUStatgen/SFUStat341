@@ -1,0 +1,169 @@
+---
+title: "Leture 12"
+author: "Brad McNeney"
+output: 
+  beamer_presentation:
+    includes:
+      in_header: header_pagenum.tex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning=FALSE,message=FALSE,fig.height=3,fig.width=5)
+```
+
+## Preparation for the final exam
+
+* Final exam is from 8:30 - 11:30, Tuesday April 16,
+in Images Theatre.
+
+* Though the time slot for the final is three hours, I 
+will aim for a final that will take most people two hours.
+    * A bit less than twice as long as the midterm.
+
+* The exam is cumulative, but with about 2/3 emphasis on 
+material after the midterm (lectures 7-11) and 1/3 from before
+(lectures 1-6).
+
+* In cases where we discussed both base-R and tidyverse approaches
+to a task, you are responsible only for the tidyverse version.
+
+* The exam is closed book. R cheatsheets will be provided.
+    * Cheatsheets for this year's exam available at
+    https://canvas.sfu.ca/courses/43617/files/9846163/download?wrap=1
+    
+## Course objectives -- recap
+
+- Understand basic R data structures and programming
+- Learn how to use base R and R package functions for data management, exploration, presentation and analysis
+- Learn how to use packages from the "tidyverse", a collection of modern tools for data science.
+    * <https://www.tidyverse.org/>
+
+## Overview of lectures
+
+Focus on the following topics from lectures 1-11:
+
+1. (no topics -- introduction and getting started)
+2. dataframes, lists, vectors, functions
+3. subsetting with $, [ and [[ and with dplyr, for loops, reading data from files
+4. transforming variables, working with factors, working with dates
+5. working with strings
+6. reading from databases, merging/joining database tables and dataframes
+7. what is tidy data, reshaping with gather and spread (homework 2), split-apply-combine for transformations and data summaries
+8. iterating with map, graphics with ggplot2
+9. graphics with ggplot2
+10. pseudo-random number generation, permutation tests,
+the replicate function for simulation
+11. the bootstrap, cross-validation
+
+## More Examples 
+
+* using ggplot, gather, split-apply-combine, map
+
+```{r}
+library(tidyverse)
+```
+
+##
+
+\scriptsize
+
+```{r}
+library(ISLR); data(Wage)
+ggplot(Wage,aes(x=age,y=wage)) + geom_point(alpha=.1)
+```
+
+##
+
+\scriptsize
+
+```{r}
+fit <- lm(wage ~ poly(age,4),data=Wage,model=TRUE)
+summary(fit)$coef
+plotfit <- function(fit,dat,newdat){
+  preds <- data.frame(newdat,
+          predict(fit,newdata=newdat,interval="confidence"))
+  ggplot(dat,aes(x=age)) + geom_point(aes(y=wage),alpha=0.1) +
+    geom_ribbon(aes(ymin=lwr,ymax=upr),
+                data=preds,fill="blue",alpha=.2) + 
+    geom_line(aes(y=fit),data=preds,color="blue")
+}
+```
+
+##
+
+\scriptsize
+
+```{r}
+age <- sort(unique(Wage$age)) 
+newdat <- data.frame(age=age)
+plotfit(fit,Wage,newdat)
+```
+
+
+##
+
+\scriptsize
+
+```{r}
+age <- sort(unique(Wage$age))
+Xmat <- data.frame(age=age,poly(age,4))
+Xlong <- gather(Xmat,basisFun,b,-age) 
+ggplot(Xlong,aes(x=age,y=b,color=basisFun)) + geom_line()
+```
+
+##
+
+\scriptsize
+
+```{r}
+Wage %>% group_by(maritl) %>% summarize(n=n())
+Wage <- mutate(Wage,maritl2 = fct_lump(maritl,n=2))
+Wage %>% group_by(maritl2) %>% summarize(n=n())
+```
+
+##
+
+\scriptsize
+
+```{r}
+Wage %>% split(.$maritl2) %>%
+  map(~lm(wage~poly(age,4),data=.)) 
+```
+
+##
+
+\scriptsize
+
+```{r}
+Wage %>% split(.$maritl2) %>%
+  map(~lm(wage~poly(age,4),data=.)) %>%
+  map_dbl(~ mean(.$residuals^2))
+```
+
+##
+
+\scriptsize
+
+```{r}
+data(iris)
+iris %>% group_by(Species) %>%
+  summarize(n=n(),
+            meanSL = mean(Sepal.Length),
+            meanSW = mean(Sepal.Width),
+            SDSL = sd(Sepal.Length),
+            SDSW = sd(Sepal.Width))
+```
+
+##
+
+\scriptsize
+
+```{r}
+set.seed(1)
+iris <- iris %>% 
+  group_by(Species) %>%
+  sample_n(size=5) %>%
+  ungroup() 
+library(ggplot2)
+ggplot(iris,aes(x=Sepal.Length,y=Sepal.Width,label=Species)) + geom_text()
+```
