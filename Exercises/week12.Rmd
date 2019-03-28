@@ -1,0 +1,65 @@
+---
+title: "Week 12 exercises"
+author: "Brad McNeney"
+date: '2019-03-28'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning=FALSE,message=FALSE)
+```
+
+## Obtain the data, load packages, set the random seed
+
+We will use a dataset on wages that is made
+available in the `ISLR` package. Use `install.packages("ISLR")` to install this package.
+
+```{r}
+library(ISLR)
+data(Wage)
+library(tidyverse)
+ggplot(Wage,aes(x=age,y=wage)) + geom_point(alpha=.1)
+```
+
+
+1. Write a function called `cv`
+that takes the `degree` of polynomial to fit,
+and the number `k` of folds, and performs k-fold cross-validation to estimate
+the test error for a polynomial of that `degree`. 
+Set `k=10` by default.
+Your function should get the `Wage` data from
+your workspace, rather than as an argument 
+to your function.
+If `k` is the number of folds, use
+`folds <- sample(1:k,size=nrow(Wage),replace=TRUE)` to 
+set the folds.
+Set the seed with `set.seed(123)` 
+and run your function to estimate the test error for
+a 4th degree polynomial. 
+
+2. Use `map_dbl` to call your `cv` function
+over polynomial degrees 1, 2, \ldots, 15 and
+save the estimated test errors for each
+degree. Plot these estimated test errors *vs*
+degree. What degree would you choose?
+Set the seed with `set.seed(1)` before running.
+
+
+3. In the lecture 11 slides we used the following
+code to get a bootstrap distribution for the 
+estimated coefficient of the linear term  in a quadratic regression of 
+`mpg` on `horsepower`.
+
+```{r}
+set.seed(42)
+n <- nrow(Auto)
+B <- 500; beta1Boot <- rep(NA,B)
+for(i in 1:B) {
+  rAuto <- sample_n(Auto,size=n,replace=TRUE)
+  fit <- lm(mpg~poly(horsepower,2),data=rAuto)
+  beta1Boot[i] <- coefficients(fit)[2]
+}
+beta1Boot <- data.frame(beta1=beta1Boot)
+```
+
+Redo the `for()` loop with `replicate()`.
